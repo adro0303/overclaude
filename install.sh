@@ -64,6 +64,56 @@ else
   warn "notify-send not found. On Debian/Ubuntu: sudo apt-get install -y libnotify-bin"
 fi
 
+# --- 1b. Hook: turn-completion ping (sound + Telegram) -----------------------
+say "Installing the turn-completion notification hook..."
+cp "$REPO_DIR/hooks/stop-notify" "$CLAUDE_DIR/hooks/stop-notify"
+chmod +x "$CLAUDE_DIR/hooks/stop-notify"
+
+python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
+import json, sys, os
+
+path = sys.argv[1]
+settings = {}
+if os.path.exists(path):
+    with open(path) as f:
+        settings = json.load(f)
+
+hooks = settings.setdefault("hooks", {})
+stop_hooks = hooks.setdefault("Stop", [])
+
+entry = {
+    "hooks": [{
+        "type": "command",
+        "command": 'python3 "$HOME/.claude/hooks/stop-notify"',
+        "timeout": 8,
+    }],
+}
+
+already = any(
+    any("stop-notify" in h.get("command", "") for h in e.get("hooks", []))
+    for e in stop_hooks
+)
+if not already:
+    stop_hooks.append(entry)
+
+# Let Claude use its native mobile push (PushNotification tool) once Remote
+# Control is connected -- opt-in flags, never overwritten if already set.
+settings.setdefault("agentPushNotifEnabled", True)
+settings.setdefault("inputNeededNotifEnabled", True)
+
+with open(path, "w") as f:
+    json.dump(settings, f, indent=2)
+    f.write("\n")
+
+print("settings.json updated" if not already else "settings.json already had the Stop hook, left as-is")
+PYEOF
+
+if command -v paplay >/dev/null 2>&1; then
+  say "paplay found -- completion sound will play (Linux/PulseAudio/PipeWire)."
+else
+  warn "paplay not found -- the completion sound is silently skipped, Telegram/push still work."
+fi
+
 # --- 2. Shell helpers: cproj / ctel ------------------------------------------
 say "Wiring up shell helpers (cproj, ctel)..."
 for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
@@ -104,6 +154,10 @@ Done. What's automated vs. what needs you:
 
   Automated:
     - Build/test failure -> desktop notification hook
+    - Turn-completion ping -> sound + Telegram (hooks/stop-notify)
+    - Native mobile push notifications enabled (agentPushNotifEnabled,
+      inputNeededNotifEnabled) -- only reaches your phone once Remote
+      Control is connected to the session, see below
     - cproj / ctel shell helpers
 
   Needs you (one-time, both documented in README.md):
