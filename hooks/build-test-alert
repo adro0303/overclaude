@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""PostToolUseFailure hook: desktop notification only for test/build
+commands (npm test, pytest, cargo build, make, ...), not for every failed
+Bash call -- that would be noise. Reads the hook JSON on stdin, writes the
+hook JSON response on stdout. No shell interpolation of untrusted input.
+"""
+import json
+import re
+import subprocess
+import sys
+
+TEST_BUILD_PATTERN = re.compile(
+    r"(^|[\s&|;])"
+    r"(npm\s+(run\s+)?(test|build)"
+    r"|yarn\s+(test|build)"
+    r"|pnpm\s+(test|build)"
+    r"|pytest"
+    r"|go\s+(test|build)"
+    r"|cargo\s+(test|build)"
+    r"|make(\s|$)"
+    r"|mvn\s+(test|package|install)"
+    r"|gradle\s+(test|build)"
+    r"|jest"
+    r"|vitest)",
+    re.IGNORECASE,
+)
+
+
+def main() -> None:
+    try:
+        payload = json.load(sys.stdin)
+    except Exception:
+        sys.exit(0)
+
+    command = payload.get("tool_input", {}).get("command", "") or ""
+    if not TEST_BUILD_PATTERN.search(command):
+        sys.exit(0)
+
+    title = "Claude Code: build/test failed"
+    body = command[:120]
+
+    try:
+        subprocess.run(
+            ["notify-send", title, body],
+            check=False,
+            timeout=5,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except (FileNotFoundError, OSError, subprocess.TimeoutExpired):
+        pass
+
+    escaped_body = body.replace(";", ",")
+    terminal_sequence = f"\x1b]777;notify;{title};{escaped_body}\x07"
+
+    print(json.dumps({
+        "hookSpecificOutput": {
+            "hookEventName": "PostToolUseFailure",
+            "terminalSequence": terminal_sequence,
+        }
+    }))
+
+
+if __name__ == "__main__":
+    main()
