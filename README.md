@@ -10,23 +10,23 @@
   <a href="https://github.com/adro0303/overclaude/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
 </p>
 
-**One integrated setup that makes [Claude Code](https://code.claude.com) more efficient *and* more comfortable — instead of you gluing together five different tools yourself.**
+**[Claude Code](https://code.claude.com)'s ecosystem has a dozen good ideas scattered across a dozen separate repos. Overclaude is what happens when the best of them get evaluated, stripped down, and wired into *one* setup you install once — instead of five things you'd have to find, compare, and glue together yourself.**
 
-Every serious improvement people bolt onto Claude Code today lives in its own repo, with its own install steps and its own tradeoffs — and half of them solve the same problem twice. Overclaude pulls the good half of that ecosystem into one setup: fewer tokens burned per answer, and a lot less friction between you and the machine it's running on. No forked runtime, no rewritten agent loop, no separate subscription. Just Claude Code, configured properly, running closer to its limit.
+That's the whole project: not a new tool, a curation. Every serious improvement people bolt onto Claude Code today lives in its own repo, with its own install steps and its own tradeoffs — and several of them solve the exact same problem twice. Overclaude is the result of actually doing that comparison — cloning the candidates, reading the code, benchmarking the claims — and shipping only the pieces that won, pre-wired to work together.
 
 <p align="center">
-  <img src="./assets/demo.svg" alt="Claude keeps working on your machine, you get pinged on your phone the moment it needs you" width="100%">
+  <img src="./assets/convergence.svg" alt="codebase-memory-mcp, Agent-Reach, Claude Code Remote Control, Claude Code Channels, and native hooks, converging into one Overclaude setup" width="100%">
 </p>
 
-<table>
-<tr><th align="left" colspan="2">⚡ Efficient</th></tr>
-<tr><td width="26%"><b>Codebase graph</b></td><td>Structural answers in ~100s of tokens, not tens of thousands</td></tr>
-<tr><td><b>Reach beyond the web</b></td><td>Logged-in sites, transcripts — only when native fetch genuinely can't</td></tr>
-<tr><th align="left" colspan="2">📱 Comfortable</th></tr>
-<tr><td><b>Pocket control</b></td><td>Official mobile app + optional Telegram, zero exposed ports</td></tr>
-<tr><td><b>Signal, not noise</b></td><td>Notified only when a test/build breaks, or a turn finishes — nothing in between</td></tr>
-<tr><td><b>One-command switch</b></td><td><code>cproj</code> / <code>ctel</code> instead of a flag ritual, per project</td></tr>
-</table>
+| What it does | Powered by |
+|---|---|
+| 🧠 Codebase knowledge graph | [`codebase-memory-mcp`](https://github.com/DeusData/codebase-memory-mcp) — chosen over Graphify after both were cloned and benchmarked |
+| 🌐 On-demand internet access | [`Agent-Reach`](https://github.com/Panniantong/Agent-Reach) — installed as a skill, not a standing MCP |
+| 📱 Mobile app control | Claude Code's native **Remote Control** — no bot required |
+| 💬 Telegram control | Claude Code's native **Channels** plugin — official, not custom-built |
+| 🔔 Smart notifications | Original hooks in this repo, built after `tmux`/`Orca`-style orchestration was ruled out |
+
+Full evaluation notes — what else was considered, and why it lost — are in [`docs/`](./docs) and [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
 
 ## ⚡ Efficient: less context, fewer tokens, sharper answers
 
@@ -37,6 +37,10 @@ A local, zero-API-key code knowledge graph (tree-sitter + a persistent graph, no
 Native `WebFetch`/`WebSearch` stay the default for every generic page. A capability skill kicks in only for what they genuinely can't do: logged-in platforms, heavy-JS pages, video transcripts — installed as an on-demand skill, not a standing MCP tax on every session.
 
 ## 📱 Comfortable: leave it running, carry it in your pocket
+
+<p align="center">
+  <img src="./assets/demo.svg" alt="Claude keeps working on your machine, you get pinged on your phone the moment it needs you" width="80%">
+</p>
 
 **Leave it running. Drive it from your pocket.**
 Built entirely on Claude Code's *native* Remote Control and Channels features — no third-party bot server, no proxy, no exposed port. Close your laptop mid-task and approve permissions, read progress, and send new instructions from the official Claude mobile app, or a Telegram bot that only the people you name can talk to.

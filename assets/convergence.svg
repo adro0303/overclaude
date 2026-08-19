@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 260" width="900" height="260" role="img" aria-label="codebase-memory-mcp, Agent-Reach, Claude Code Remote Control, Claude Code Channels, and native hooks, converging into one Overclaude setup">
+  <defs>
+    <linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12161b"/>
+      <stop offset="100%" stop-color="#181d24"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="900" height="260" fill="url(#cbg)"/>
+
+  <!-- converging connectors -->
+  <g fill="none" stroke="#3a4048" stroke-width="2">
+    <path d="M280,37 C430,37 430,125 650,125"/>
+    <path d="M280,81 C430,81 430,125 650,125"/>
+    <path d="M280,125 C430,125 430,125 650,125"/>
+    <path d="M280,169 C430,169 430,125 650,125"/>
+    <path d="M280,213 C430,213 430,125 650,125"/>
+  </g>
+  <g fill="none" stroke="#ef5b2c" stroke-width="2" stroke-dasharray="4 10" opacity="0.8">
+    <path d="M280,37 C430,37 430,125 650,125">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.8s" repeatCount="indefinite"/>
+    </path>
+    <path d="M280,81 C430,81 430,125 650,125">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.8s" begin="0.15s" repeatCount="indefinite"/>
+    </path>
+    <path d="M280,125 C430,125 430,125 650,125">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.8s" begin="0.3s" repeatCount="indefinite"/>
+    </path>
+    <path d="M280,169 C430,169 430,125 650,125">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.8s" begin="0.45s" repeatCount="indefinite"/>
+    </path>
+    <path d="M280,213 C430,213 430,125 650,125">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.8s" begin="0.6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- source pills -->
+  <g font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="14">
+    <rect x="20" y="20" width="260" height="34" rx="8" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+    <text x="35" y="42" fill="#e7ecee"><tspan font-weight="700">codebase-memory-mcp</tspan><tspan fill="#9aa4ab"> · code graph</tspan></text>
+
+    <rect x="20" y="64" width="260" height="34" rx="8" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+    <text x="35" y="86" fill="#e7ecee"><tspan font-weight="700">Agent-Reach</tspan><tspan fill="#9aa4ab"> · web access</tspan></text>
+
+    <rect x="20" y="108" width="260" height="34" rx="8" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+    <text x="35" y="130" fill="#e7ecee"><tspan font-weight="700">Remote Control</tspan><tspan fill="#9aa4ab"> · native mobile</tspan></text>
+
+    <rect x="20" y="152" width="260" height="34" rx="8" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+    <text x="35" y="174" fill="#e7ecee"><tspan font-weight="700">Channels</tspan><tspan fill="#9aa4ab"> · native Telegram</tspan></text>
+
+    <rect x="20" y="196" width="260" height="34" rx="8" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+    <text x="35" y="218" fill="#e7ecee"><tspan font-weight="700">Hooks</tspan><tspan fill="#9aa4ab"> · notifications</tspan></text>
+  </g>
+
+  <!-- destination -->
+  <rect x="650" y="80" width="230" height="90" rx="14" fill="#ef5b2c"/>
+  <text x="765" y="118" text-anchor="middle" font-family="'JetBrains Mono','Fira Code',ui-monospace,monospace" font-size="24" font-weight="700" fill="#141210">OVERCLAUDE</text>
+  <text x="765" y="145" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" fill="#241a12">one setup, installed once</text>
+</svg>
