@@ -1,4 +1,14 @@
-# Overclaude
+<p align="center">
+  <img src="./assets/banner.svg" alt="Overclaude" width="100%">
+</p>
+
+<p align="center">
+  <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+  <a href="https://code.claude.com"><img alt="Built for Claude Code" src="https://img.shields.io/badge/Built%20for-Claude%20Code-ef5b2c"></a>
+  <a href="./install.sh"><img alt="Install" src="https://img.shields.io/badge/install-one%20script-3a4048"></a>
+  <img alt="Ports" src="https://img.shields.io/badge/inbound%20ports-zero-2ea44f">
+  <a href="https://github.com/adro0303/overclaude/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
+</p>
 
 **Push [Claude Code](https://code.claude.com) past its factory settings: read entire codebases for pocket change in tokens, run it unattended, and drive it from your phone — without bolting on a single MCP, bot, or byte of context that isn't earning its keep.**
 
@@ -6,7 +16,15 @@ Overclocking a CPU means squeezing more performance out of hardware you already 
 
 Most "supercharge your AI agent" setups get there by throwing every MCP server, plugin, and framework they can find at the problem — and quietly pay for it in a context window that's half boilerplate before you've typed a word. Overclaude does the opposite. Every piece here survived a fight: five to nine competing implementations were cloned, read, and benchmarked per category before anything got a place in this repo. What didn't clearly win got cut, no matter how impressive the marketing.
 
-## What it actually does
+<table>
+<tr><td width="20%"><b>🧠 Codebase graph</b></td><td>Structural answers in ~100s of tokens, not tens of thousands</td></tr>
+<tr><td><b>🌐 Reach beyond the web</b></td><td>Logged-in sites, transcripts — only when native fetch can't</td></tr>
+<tr><td><b>📱 Pocket control</b></td><td>Official mobile app + optional Telegram, zero exposed ports</td></tr>
+<tr><td><b>🔔 Signal, not noise</b></td><td>One hook, fires only when a test/build actually breaks</td></tr>
+<tr><td><b>⚡ One-command switch</b></td><td><code>cproj</code> / <code>ctel</code> instead of a flag ritual</td></tr>
+</table>
+
+## 🧠 What it actually does
 
 **Understand large codebases without reading them file-by-file.**
 A local, zero-API-key code knowledge graph (tree-sitter + a persistent graph, not embeddings-as-a-service) answers structural questions — who calls this, what breaks if I change that, what's the architecture — in a few hundred tokens instead of tens of thousands. Scoped per project, never loaded globally, so it costs nothing in the projects that don't need it.
@@ -23,7 +41,7 @@ One scoped hook watches for failed test/build commands and fires a desktop notif
 **Zero-ceremony project switching.**
 Two shell functions, `cproj` and `ctel`, turn "open this project and make it reachable from my phone" into one command instead of a memorized ritual of flags.
 
-## Why this and not the alternatives
+## ⚖️ Why this and not the alternatives
 
 Overclaude exists because the obvious alternatives were tried and rejected for specific, checkable reasons — not vibes:
 
@@ -37,16 +55,16 @@ Overclaude exists because the obvious alternatives were tried and rejected for s
 
 Full writeups of what was compared and why live in [`docs/`](./docs).
 
-## Architecture
+## 🏗️ Architecture
 
 ```mermaid
 flowchart TB
-    subgraph Mobile["Your phone"]
+    subgraph Mobile["📱 Your phone"]
         App["Official Claude app / claude.ai/code"]
         TG["Telegram (optional)"]
     end
 
-    subgraph PC["Your machine"]
+    subgraph PC["💻 Your machine"]
         RC["claude remote-control"]
         CH["claude --bg --channels telegram"]
         Hook["PostToolUseFailure hook"]
@@ -63,11 +81,18 @@ flowchart TB
     Claude --> AR
     Claude -. "failed test/build" .-> Hook
     Hook -. "desktop notification" .-> PC
+
+    classDef mobile fill:#1b2a33,stroke:#4fbac9,stroke-width:1.5px,color:#e7ecee
+    classDef machine fill:#241a12,stroke:#ef5b2c,stroke-width:1.5px,color:#f3f2ee
+    classDef core fill:#ef5b2c,stroke:#ef5b2c,color:#141210,font-weight:bold
+    class App,TG mobile
+    class RC,CH,Hook,CBM,AR machine
+    class Claude core
 ```
 
 Nothing here opens an inbound port. Both mobile paths are outbound connections initiated by your machine or by Telegram's own servers polling your bot — there is nothing on the public internet pointed at your PC.
 
-## Quickstart
+## 🚀 Quickstart
 
 ```bash
 git clone https://github.com/adro0303/overclaude.git
@@ -101,14 +126,14 @@ Open the **Code** tab in the official Claude mobile app, or visit `claude.ai/cod
 
 From then on, `ctel <project-name>` moves the bot to whichever project you're working on.
 
-## Configuration reference
+## 🔧 Configuration reference
 
 - [`CLAUDE.md.example`](./CLAUDE.md.example) — tool-preference rules to merge into your own `CLAUDE.md`
 - [`hooks/build-test-alert`](./hooks/build-test-alert) — the notification hook, read it before you trust it
 - [`shell/aliases.zsh`](./shell/aliases.zsh) — `cproj` / `ctel`
 - [`.env.example`](./.env.example) — the only environment variables this repo cares about
 
-## Security notes
+## 🔒 Security notes
 
 - Nobody talks to the Telegram bot by default except the account that set it up (`dmPolicy: allowlist`, checked by sender ID, not chat/group ID).
 - Anyone you *do* allow through the channel can approve or deny permission prompts in the session it's attached to — that's real control over what Claude does on your machine, not a read-only chat. Grant it accordingly.
