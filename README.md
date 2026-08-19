@@ -10,27 +10,33 @@
   <a href="https://github.com/adro0303/overclaude/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
 </p>
 
-**Push [Claude Code](https://code.claude.com) past its factory settings: read entire codebases for pocket change in tokens, run it unattended, and drive it from your phone — without bolting on a single MCP, bot, or byte of context that isn't earning its keep.**
+**One integrated setup that makes [Claude Code](https://code.claude.com) more efficient *and* more comfortable — instead of you gluing together five different tools yourself.**
 
-Overclocking a CPU means squeezing more performance out of hardware you already own, without replacing it. That's the whole idea here — no forked runtime, no rewritten agent loop, no subscription to something else. Just Claude Code, configured properly, running closer to its limit.
+Every serious improvement people bolt onto Claude Code today lives in its own repo, with its own install steps and its own tradeoffs — and half of them solve the same problem twice. Overclaude pulls the good half of that ecosystem into one setup: fewer tokens burned per answer, and a lot less friction between you and the machine it's running on. No forked runtime, no rewritten agent loop, no separate subscription. Just Claude Code, configured properly, running closer to its limit.
 
-Most "supercharge your AI agent" setups get there by throwing every MCP server, plugin, and framework they can find at the problem — and quietly pay for it in a context window that's half boilerplate before you've typed a word. Overclaude does the opposite. Every piece here survived a fight: five to nine competing implementations were cloned, read, and benchmarked per category before anything got a place in this repo. What didn't clearly win got cut, no matter how impressive the marketing.
+<p align="center">
+  <img src="./assets/demo.svg" alt="Claude keeps working on your machine, you get pinged on your phone the moment it needs you" width="100%">
+</p>
 
 <table>
-<tr><td width="20%"><b>🧠 Codebase graph</b></td><td>Structural answers in ~100s of tokens, not tens of thousands</td></tr>
-<tr><td><b>🌐 Reach beyond the web</b></td><td>Logged-in sites, transcripts — only when native fetch can't</td></tr>
-<tr><td><b>📱 Pocket control</b></td><td>Official mobile app + optional Telegram, zero exposed ports</td></tr>
-<tr><td><b>🔔 Signal, not noise</b></td><td>One hook, fires only when a test/build actually breaks</td></tr>
-<tr><td><b>⚡ One-command switch</b></td><td><code>cproj</code> / <code>ctel</code> instead of a flag ritual</td></tr>
+<tr><th align="left" colspan="2">⚡ Efficient</th></tr>
+<tr><td width="26%"><b>Codebase graph</b></td><td>Structural answers in ~100s of tokens, not tens of thousands</td></tr>
+<tr><td><b>Reach beyond the web</b></td><td>Logged-in sites, transcripts — only when native fetch genuinely can't</td></tr>
+<tr><th align="left" colspan="2">📱 Comfortable</th></tr>
+<tr><td><b>Pocket control</b></td><td>Official mobile app + optional Telegram, zero exposed ports</td></tr>
+<tr><td><b>Signal, not noise</b></td><td>Notified only when a test/build breaks, or a turn finishes — nothing in between</td></tr>
+<tr><td><b>One-command switch</b></td><td><code>cproj</code> / <code>ctel</code> instead of a flag ritual, per project</td></tr>
 </table>
 
-## 🧠 What it actually does
+## ⚡ Efficient: less context, fewer tokens, sharper answers
 
 **Understand large codebases without reading them file-by-file.**
 A local, zero-API-key code knowledge graph (tree-sitter + a persistent graph, not embeddings-as-a-service) answers structural questions — who calls this, what breaks if I change that, what's the architecture — in a few hundred tokens instead of tens of thousands. Scoped per project, never loaded globally, so it costs nothing in the projects that don't need it.
 
 **Reach the parts of the internet Claude can't fetch natively.**
 Native `WebFetch`/`WebSearch` stay the default for every generic page. A capability skill kicks in only for what they genuinely can't do: logged-in platforms, heavy-JS pages, video transcripts — installed as an on-demand skill, not a standing MCP tax on every session.
+
+## 📱 Comfortable: leave it running, carry it in your pocket
 
 **Leave it running. Drive it from your pocket.**
 Built entirely on Claude Code's *native* Remote Control and Channels features — no third-party bot server, no proxy, no exposed port. Close your laptop mid-task and approve permissions, read progress, and send new instructions from the official Claude mobile app, or a Telegram bot that only the people you name can talk to.
@@ -44,9 +50,9 @@ A `Stop` hook fires a completion sound and a short Telegram message (with a prev
 **Zero-ceremony project switching.**
 Two shell functions, `cproj` and `ctel`, turn "open this project and make it reachable from my phone" into one command instead of a memorized ritual of flags.
 
-## ⚖️ Why this and not the alternatives
+## 🔍 The homework behind it
 
-Overclaude exists because the obvious alternatives were tried and rejected for specific, checkable reasons — not vibes:
+None of this is a pile of tools installed for their own sake. Every piece above replaced something that was tried and rejected first, for a specific, checkable reason — five to nine competing implementations were cloned, read, and benchmarked per category before anything earned a place here:
 
 | Instead of... | Overclaude uses | Because |
 |---|---|---|
