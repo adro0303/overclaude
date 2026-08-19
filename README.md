@@ -20,6 +20,9 @@ Built entirely on Claude Code's *native* Remote Control and Channels features �
 **Get pinged for what matters, not everything.**
 One scoped hook watches for failed test/build commands and fires a desktop notification — not a ping for every tool call Claude makes, just the ones that actually need you.
 
+**Know the moment it's done, wherever you are.**
+A `Stop` hook fires a completion sound and a short Telegram message (with a preview of the last response) the instant a turn finishes. Combined with `agentPushNotifEnabled`, Claude can also push straight to the official mobile app's native notification channel once Remote Control is connected — no extra bot, no extra token, reuses the Telegram pairing you already did above.
+
 **Zero-ceremony project switching.**
 Two shell functions, `cproj` and `ctel`, turn "open this project and make it reachable from my phone" into one command instead of a memorized ritual of flags.
 
@@ -50,6 +53,7 @@ flowchart TB
         RC["claude remote-control"]
         CH["claude --bg --channels telegram"]
         Hook["PostToolUseFailure hook"]
+        StopHook["Stop hook (stop-notify)"]
         CBM["Code graph MCP (per project)"]
         AR["Internet-access skill (on demand)"]
         Claude["Claude Code session"]
@@ -63,6 +67,10 @@ flowchart TB
     Claude --> AR
     Claude -. "failed test/build" .-> Hook
     Hook -. "desktop notification" .-> PC
+    Claude -. "turn finished" .-> StopHook
+    StopHook -. "sound" .-> PC
+    StopHook -. "Telegram message" .-> TG
+    Claude -. "native push (if RC connected)" .-> App
 ```
 
 Nothing here opens an inbound port. Both mobile paths are outbound connections initiated by your machine or by Telegram's own servers polling your bot — there is nothing on the public internet pointed at your PC.
@@ -77,6 +85,7 @@ cd overclaude
 
 The installer is interactive and asks before touching anything optional. It always:
 - Installs the build/test-failure notification hook
+- Installs the turn-completion hook (sound + Telegram ping) and enables native mobile push notifications
 - Wires `cproj` / `ctel` into your shell
 
 It only installs the code-graph MCP or the internet-access skill if you say yes, and it never overwrites your existing `~/.claude/settings.json` or `~/.claude/CLAUDE.md` — it merges in what's missing.
@@ -101,10 +110,13 @@ Open the **Code** tab in the official Claude mobile app, or visit `claude.ai/cod
 
 From then on, `ctel <project-name>` moves the bot to whichever project you're working on.
 
+Once Telegram is paired, `hooks/stop-notify` (installed automatically) reuses that same pairing to ping you when a turn finishes — nothing further to configure. Native mobile push additionally reaches your phone once a session was started with `claude remote-control` / `cproj`; the `agentPushNotifEnabled` / `inputNeededNotifEnabled` settings the installer sets just allow Claude to use that channel, they don't create the connection by themselves.
+
 ## Configuration reference
 
 - [`CLAUDE.md.example`](./CLAUDE.md.example) — tool-preference rules to merge into your own `CLAUDE.md`
-- [`hooks/build-test-alert`](./hooks/build-test-alert) — the notification hook, read it before you trust it
+- [`hooks/build-test-alert`](./hooks/build-test-alert) — the build/test-failure notification hook, read it before you trust it
+- [`hooks/stop-notify`](./hooks/stop-notify) — the turn-completion hook (sound + Telegram ping), read it before you trust it
 - [`shell/aliases.zsh`](./shell/aliases.zsh) — `cproj` / `ctel`
 - [`.env.example`](./.env.example) — the only environment variables this repo cares about
 
@@ -114,6 +126,7 @@ From then on, `ctel <project-name>` moves the bot to whichever project you're wo
 - Anyone you *do* allow through the channel can approve or deny permission prompts in the session it's attached to — that's real control over what Claude does on your machine, not a read-only chat. Grant it accordingly.
 - Secrets (the bot token) are never stored in this repo or in the hook script — they live in `~/.claude/channels/telegram/.env`, `chmod 600`, or your own shell environment.
 - The notification hook only ever inspects the command string of a failed Bash call and prints a notification; it has no `allow`/`deny` authority and cannot approve anything.
+- `hooks/stop-notify` sends a short (150-char) preview of Claude's last response over Telegram to whoever is already in your channel's `allowFrom` allowlist — know that before you approve someone through pairing, since it's more than the build/test hook shares. Set `TELEGRAM_NOTIFY_CHAT_IDS` to narrow it to a subset if you pair more people than you want reading completion previews.
 
 ## Acknowledgments
 

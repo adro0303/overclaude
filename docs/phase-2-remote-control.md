@@ -26,9 +26,17 @@ already does it better — in this case, it does.
   automatic per-session worktree isolation. No `tmux`, no
   `capture-pane` regex-parsing a TUI that changes between versions.
 - **Hooks** (`PermissionRequest`, `Notification`, `PostToolUseFailure`,
-  and the `type: "http"` hook that lets any of these block on a POST to a
-  local service) — the actual mechanism for intercepting approvals and
-  failures with structured JSON, not text scraping.
+  `Stop`, and the `type: "http"` hook that lets any of these block on a
+  POST to a local service) — the actual mechanism for intercepting
+  approvals, failures, and turn completions with structured JSON, not text
+  scraping.
+- **Native push notifications** (`agentPushNotifEnabled`,
+  `inputNeededNotifEnabled`, the built-in `PushNotification` tool) —
+  Claude can push directly to the official mobile app's system
+  notification channel. It only reaches the phone if the session was
+  started with Remote Control connected; otherwise it degrades to a local
+  desktop notification, which is still handled natively instead of a
+  hook shelling out to a platform-specific notifier.
 
 ## What was rejected, and why
 
@@ -47,6 +55,10 @@ already does it better — in this case, it does.
   desktop notification for failed test/build commands specifically, silent
   for everything else. Read-only over the tool result; it has no approval
   authority.
+- `hooks/stop-notify` — a `Stop` hook: plays a completion sound and sends a
+  short Telegram preview of the last response whenever a turn ends. Reuses
+  the Telegram channel's existing allowlist for recipients instead of
+  requiring separate configuration.
 - `shell/aliases.zsh` — `cproj` (Remote Control per project, any number
   concurrently) and `ctel` (moves the single Telegram channel connection
   between projects, since a bot token can only have one active listener).
