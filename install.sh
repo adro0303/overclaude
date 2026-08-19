@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# claude-code-boost installer.
+# overclaude installer.
 # Idempotent: safe to re-run. Never overwrites your existing settings/CLAUDE.md
 # wholesale -- only merges in what's missing.
 set -euo pipefail
@@ -70,7 +70,7 @@ for rc in "$HOME/.zshrc" "$HOME/.bashrc"; do
   [ -f "$rc" ] || continue
   line="[ -f \"$REPO_DIR/shell/aliases.zsh\" ] && source \"$REPO_DIR/shell/aliases.zsh\""
   if ! grep -qF "$REPO_DIR/shell/aliases.zsh" "$rc" 2>/dev/null; then
-    { echo ""; echo "# claude-code-boost"; echo "$line"; } >> "$rc"
+    { echo ""; echo "# overclaude"; echo "$line"; } >> "$rc"
     say "Added source line to $rc"
   else
     say "$rc already sources aliases.zsh"

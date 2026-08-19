@@ -1,9 +1,9 @@
-# claude-code-boost: shell helpers for opening a project with mobile control
+# overclaude: shell helpers for opening a project with mobile control
 # wired up. Source this file from your ~/.zshrc or ~/.bashrc (install.sh does
-# this for you). Assumes projects live under $CC_BOOST_PROJECTS_DIR
+# this for you). Assumes projects live under $OVERCLAUDE_PROJECTS_DIR
 # (default: ~/Projects) -- override in your shell rc before sourcing if not.
 
-: "${CC_BOOST_PROJECTS_DIR:=$HOME/Projects}"
+: "${OVERCLAUDE_PROJECTS_DIR:=$HOME/Projects}"
 
 # cproj <project>: cd into the project and (re)connect Remote Control so it's
 # reachable from the official Claude mobile app / claude.ai/code. Uses a git
@@ -15,7 +15,7 @@ cproj() {
     echo "Usage: cproj <project-name>"
     return 1
   fi
-  local dir="$CC_BOOST_PROJECTS_DIR/$proj"
+  local dir="$OVERCLAUDE_PROJECTS_DIR/$proj"
   if [ ! -d "$dir" ]; then
     echo "Not found: $dir"
     return 1
@@ -41,7 +41,7 @@ ctel() {
     echo "Usage: ctel <project-name>"
     return 1
   fi
-  local dir="$CC_BOOST_PROJECTS_DIR/$proj"
+  local dir="$OVERCLAUDE_PROJECTS_DIR/$proj"
   if [ ! -d "$dir" ]; then
     echo "Not found: $dir"
     return 1
