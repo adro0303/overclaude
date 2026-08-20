@@ -57,7 +57,7 @@ Two shell functions, `cproj` and `ctel`, turn "open this project and make it rea
 
 ## 🤔 Why should you install this?
 
-Because doing it yourself costs more than the five minutes `install.sh` takes — you just don't find out until later.
+Every piece here had real competition, and Overclaude already ran the bake-off so you don't have to. A code-graph MCP, a way to talk to Telegram, a way to run multiple agents at once, a way to reach the API — each of those categories had several legitimate options, each option got cloned and actually tried, and only the one that won a head-to-head made it into this repo. Doing that yourself costs more than the five minutes `install.sh` takes — you just don't find out until later.
 
 **You'd end up running two things that do the same job.** Whatever code-graph MCP you land on first, you'll eventually find a second one — and now both load their tool schema into every session, whether you're debugging a race condition or fixing a typo. Overclaude ships one, scoped to the project that actually needs it.
 
@@ -69,7 +69,7 @@ Because doing it yourself costs more than the five minutes `install.sh` takes �
 
 **You wouldn't get a sponsored message typed into your own terminal** — not because nobody thought of it, but because it was checked seriously and ruled out: no model for a personal setup survives without third-party install volume, and the only way to inject content technically still costs real tokens on every use.
 
-None of that is a guess — every piece above replaced something that was cloned, read, and actually benchmarked before losing. Full writeups are in [`docs/`](./docs).
+None of that is a guess — every one of those was a real fork with more than one serious option on the table, and this is the side that won each time. Full writeups of the runners-up are in [`docs/`](./docs).
 
 ## 🧩 How skills get chosen: token cost is the filter
 
