@@ -132,30 +132,38 @@ say "CLAUDE.md guidance is in CLAUDE.md.example -- it is NOT auto-appended,"
 say "since it references tools you may not have installed. Review it and merge"
 say "what applies into $CLAUDE_DIR/CLAUDE.md yourself."
 
-# --- 4. Optional dependencies -------------------------------------------------
+# --- 4. Tools & skills (all installed automatically, no prompts) --------------
+# These only cost anything when actually used (skills load on demand; the
+# codebase-memory-mcp binary sitting on disk costs nothing until a project
+# registers it in .mcp.json -- see step 4c / cproj/ctel for that part), so
+# there's nothing to ask permission for here. The one exception -- the
+# support nudge -- stays an explicit opt-in below because it runs on every
+# session start regardless of whether you're using it that session.
 echo
-read -r -p "Install codebase-memory-mcp now (local code-graph MCP, MIT)? [y/N] " ans
-if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
-  curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash
-  warn "It's installed but NOT registered globally on purpose -- see CLAUDE.md.example for per-project setup."
+say "Installing codebase-memory-mcp (local code-graph MCP, MIT)..."
+if curl -fsSL https://raw.githubusercontent.com/DeusData/codebase-memory-mcp/main/install.sh | bash; then
+  warn "Binary installed but NOT registered globally -- cproj/ctel auto-wire it per project"
+  warn "past the size threshold (step 4c below); see CLAUDE.md.example for manual setup."
+else
+  warn "codebase-memory-mcp install failed -- continuing without it, nothing else depends on it."
 fi
 
-read -r -p "Install Agent-Reach now (internet-access skill, MIT)? [y/N] " ans
-if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
-  command -v pipx >/dev/null 2>&1 || { echo "pipx required -- see https://pipx.pypa.io"; exit 1; }
-  pipx install "https://github.com/Panniantong/agent-reach/archive/main.zip"
-  agent-reach install --env=auto --system
+say "Installing Agent-Reach (internet-access skill, MIT)..."
+if ! command -v pipx >/dev/null 2>&1; then
+  warn "pipx not found -- skipping Agent-Reach. Install pipx (https://pipx.pypa.io) and re-run this script to add it."
+elif pipx install "https://github.com/Panniantong/agent-reach/archive/main.zip" && agent-reach install --env=auto --system; then
+  say "Agent-Reach installed."
+else
+  warn "Agent-Reach install failed -- continuing without it."
 fi
 
-read -r -p "Install DevCorp (multi-agent build pipeline skill + 7 subagents, original)? [y/N] " ans
-if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
-  mkdir -p "$CLAUDE_DIR/skills/devcorp" "$CLAUDE_DIR/agents"
-  cp -r "$REPO_DIR/skills/devcorp/." "$CLAUDE_DIR/skills/devcorp/"
-  cp "$REPO_DIR"/agents/devcorp/*.md "$CLAUDE_DIR/agents/"
-  say "DevCorp installed: skill at ~/.claude/skills/devcorp, 7 subagents (dc-scout,"
-  say "dc-product, dc-architect, dc-frontend, dc-backend, dc-qa, dc-security) at"
-  say "~/.claude/agents/. Trigger with the word 'devcorp' or 'build me X' in a session."
-fi
+say "Installing DevCorp (multi-agent build pipeline skill + 7 subagents, original)..."
+mkdir -p "$CLAUDE_DIR/skills/devcorp" "$CLAUDE_DIR/agents"
+cp -r "$REPO_DIR/skills/devcorp/." "$CLAUDE_DIR/skills/devcorp/"
+cp "$REPO_DIR"/agents/devcorp/*.md "$CLAUDE_DIR/agents/"
+say "DevCorp installed: skill at ~/.claude/skills/devcorp, 7 subagents (dc-scout,"
+say "dc-product, dc-architect, dc-frontend, dc-backend, dc-qa, dc-security) at"
+say "~/.claude/agents/. Trigger with the word 'devcorp' or 'build me X' in a session."
 
 read -r -p "Enable the optional support nudge (one line, at most once a week, written straight to your terminal -- never touches Claude's context or costs a token)? [y/N] " ans
 if [[ "${ans:-}" =~ ^[Yy]$ ]]; then

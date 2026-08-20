@@ -11,16 +11,25 @@ skill's own "MUST USE" framing for generic public pages or bare URLs --
 native WebFetch wins there, no exception.
 
 ## Codebase understanding
-If you installed a code-graph MCP (e.g. codebase-memory-mcp), keep it
-**scoped per project**, not registered globally -- that avoids paying its
-fixed tool-schema/hook cost in every session, including trivial ones.
-Enable it only where Grep/Glob/Explore fall short (non-obvious architecture,
-transitive call tracing, change-impact radius):
+Keep the code-graph MCP (codebase-memory-mcp) **scoped per project**, not
+registered globally -- that avoids paying its fixed tool-schema/hook cost
+in every session, including trivial ones. `cproj`/`ctel` already auto-wire
+`.mcp.json` the moment you open a project with `OVERCLAUDE_GRAPH_THRESHOLD`
+files or more (default 40, tracked files via `git ls-files` when the
+project is a git repo) -- you don't need to do this by hand for a project
+big enough to qualify, and it never touches a project below the threshold.
+Once `.mcp.json` exists, the graph indexes itself the first time structural
+exploration is actually needed (the SessionStart reminder tells the model
+to call `index_repository` before that point) -- no need to ask for that
+part either.
+
+For a smaller project where you still want it, or one you opened without
+`cproj`/`ctel`:
 1. Create `.mcp.json` in the project root:
    ```json
    {"mcpServers": {"codebase-memory-mcp": {"command": "codebase-memory-mcp", "args": []}}}
    ```
-2. Restart the session and say "index this project".
+2. Restart the session -- it indexes itself the first time it's needed.
 3. Prefer structural queries (search/trace/impact tools) over reading full
    file snippets when a structural answer is enough.
 4. Never rewrite `~/.claude/settings.json` wholesale when adding a hook --
@@ -42,8 +51,9 @@ your phone:
   stops the previous project's Telegram session automatically. If a Telegram
   message doesn't seem to arrive, check which project currently holds the
   channel.
-- A large project still needs the manual `.mcp.json` step above for a code
-  graph MCP -- `cproj`/`ctel` don't turn that on by themselves.
+- Both also auto-wire the code-graph MCP (`.mcp.json`) the moment a project
+  crosses the file-count threshold above -- nothing to do by hand for a
+  project big enough to qualify.
 
 ## Third-party channel access
 The Telegram bot lives under `~/.claude/channels/telegram/`, with

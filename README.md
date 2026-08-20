@@ -33,7 +33,7 @@ Full evaluation notes — what else was considered, and why it lost — are in [
 ## ⚡ Efficient: less context, fewer tokens, sharper answers
 
 **Understand large codebases without reading them file-by-file.**
-A local, zero-API-key code knowledge graph (tree-sitter + a persistent graph, not embeddings-as-a-service) answers structural questions — who calls this, what breaks if I change that, what's the architecture — in a few hundred tokens instead of tens of thousands. Scoped per project, never loaded globally, so it costs nothing in the projects that don't need it.
+A local, zero-API-key code knowledge graph (tree-sitter + a persistent graph, not embeddings-as-a-service) answers structural questions — who calls this, what breaks if I change that, what's the architecture — in a few hundred tokens instead of tens of thousands. Installed automatically, but wired into a specific project only past a file-count threshold (`cproj`/`ctel` do this the moment you open it) — never loaded globally, so it costs nothing in the projects that don't need it.
 
 **Reach the parts of the internet Claude can't fetch natively.**
 Native `WebFetch`/`WebSearch` stay the default for every generic page. A capability skill kicks in only for what they genuinely can't do: logged-in platforms, heavy-JS pages, video transcripts — installed as an on-demand skill, not a standing MCP tax on every session.
@@ -105,7 +105,7 @@ Every skill in this repo — [`Agent-Reach`](https://github.com/Panniantong/Agen
   <img src="./assets/skills-funnel.svg" alt="Skill candidates are swept from the Claude Code skill ecosystem, then filtered: rejected if they carry a standing context cost or duplicate a native tool, kept only if they load on demand and beat what already exists. Agent-Reach and DevCorp survived that filter." width="100%">
 </p>
 
-Same filter, applied one level up: it's why `codebase-memory-mcp` stays scoped per-project instead of registered globally (see [`CLAUDE.md.example`](./CLAUDE.md.example)), and why Agent-Reach only kicks in for platforms native `WebFetch`/`WebSearch` genuinely can't handle — logged-in sites, heavy-JS pages, video transcripts — never for a generic page or bare URL, even when the skill's own docs say "MUST USE".
+Same filter, applied one level up: it's why `codebase-memory-mcp` stays scoped per-project instead of registered globally — `cproj`/`ctel` auto-wire it into a project the moment its file count crosses `OVERCLAUDE_GRAPH_THRESHOLD` (default 40), and leave anything smaller untouched, no prompt either way (see [`CLAUDE.md.example`](./CLAUDE.md.example)) — and why Agent-Reach only kicks in for platforms native `WebFetch`/`WebSearch` genuinely can't handle — logged-in sites, heavy-JS pages, video transcripts — never for a generic page or bare URL, even when the skill's own docs say "MUST USE".
 
 **DevCorp, concretely — the same principle inside one skill:**
 
@@ -169,12 +169,13 @@ cd overclaude
 ./install.sh
 ```
 
-The installer is interactive and asks before touching anything optional. It always:
+The installer installs everything by default — no prompts to get through. It:
 - Installs the build/test-failure notification hook
 - Installs the turn-completion hook (sound + Telegram ping) and enables native mobile push notifications
-- Wires `cproj` / `ctel` into your shell
+- Wires `cproj` / `ctel` into your shell (these auto-wire the code graph per project past a size threshold — see below)
+- Installs the `codebase-memory-mcp` binary, the `Agent-Reach` internet-access skill, and `DevCorp`
 
-It only installs the code-graph MCP, the internet-access skill, or DevCorp if you say yes, and it never overwrites your existing `~/.claude/settings.json` or `~/.claude/CLAUDE.md` — it merges in what's missing.
+The one exception is the [support nudge](#-support-nudge-opt-in-off-by-default) — that one prompt stays opt-in and defaults to off, because unlike everything else here it runs on every session start whether you're using it that session or not. Nothing here ever overwrites your existing `~/.claude/settings.json` or `~/.claude/CLAUDE.md` — it merges in what's missing.
 
 ### Connect your phone (native Remote Control, zero setup)
 
@@ -203,7 +204,7 @@ Once Telegram is paired, `hooks/stop-notify` (installed automatically) reuses th
 - [`CLAUDE.md.example`](./CLAUDE.md.example) — tool-preference rules to merge into your own `CLAUDE.md`
 - [`hooks/build-test-alert`](./hooks/build-test-alert) — the build/test-failure notification hook, read it before you trust it
 - [`hooks/stop-notify`](./hooks/stop-notify) — the turn-completion hook (sound + Telegram ping), read it before you trust it
-- [`shell/aliases.zsh`](./shell/aliases.zsh) — `cproj` / `ctel`
+- [`shell/aliases.zsh`](./shell/aliases.zsh) — `cproj` / `ctel`, plus the `OVERCLAUDE_GRAPH_THRESHOLD` auto-wiring for the code graph
 - [`skills/devcorp/`](./skills/devcorp) — DevCorp pipeline skill + [`references/`](./skills/devcorp/references) (phase gates, checklists, token-budget rationale)
 - [`agents/devcorp/`](./agents/devcorp) — the 7 subagents DevCorp routes to (`dc-scout` through `dc-security`), installed flat into `~/.claude/agents/`
 - [`.env.example`](./.env.example) — the only environment variables this repo cares about
