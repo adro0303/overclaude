@@ -55,19 +55,21 @@ A `Stop` hook fires a completion sound and a short Telegram message (with a prev
 **Zero-ceremony project switching.**
 Two shell functions, `cproj` and `ctel`, turn "open this project and make it reachable from my phone" into one command instead of a memorized ritual of flags.
 
-## 🔍 The homework behind it
+## 🤔 Why should you install this?
 
-None of this is a pile of tools installed for their own sake. Every piece above replaced something that was tried and rejected first, for a specific, checkable reason — five to nine competing implementations were cloned, read, and benchmarked per category before anything earned a place here:
+Because doing it yourself costs more than the five minutes `install.sh` takes — you just don't find out until later.
 
-| Instead of... | Overclaude uses | Because |
-|---|---|---|
-| A second competing code-graph MCP | One code-graph MCP, scoped per project | Two tools solving the same problem doubles the fixed context cost for zero benefit |
-| A custom-built Telegram bot | Claude Code's official `Channels` plugin | Anthropic owns the attack surface, not a random maintainer; ships a real request-ID + allowlist approval protocol instead of parsing terminal text |
-| `tmux`-based session orchestration | Claude Code's native `--bg` / `claude agents` | Structured session state (working / needs-input / completed / failed) instead of screen-scraping a TUI for spinners |
-| A paid Agent SDK integration | The Claude Code CLI directly | The SDK bills per token via API key; the CLI uses the subscription you're already paying for |
-| Ads/sponsored messages in the terminal | Nothing | Investigated seriously — no legitimate model exists for a personal setup without third-party install volume, and the only technical mechanism to inject content costs real tokens on every use |
+**You'd end up running two things that do the same job.** Whatever code-graph MCP you land on first, you'll eventually find a second one — and now both load their tool schema into every session, whether you're debugging a race condition or fixing a typo. Overclaude ships one, scoped to the project that actually needs it.
 
-Full writeups of what was compared and why live in [`docs/`](./docs).
+**You'd own a Telegram bot's security instead of Anthropic's.** Hand-rolling a bot means you're the one who decides how it stores tokens and who's allowed to talk to it. Overclaude uses Claude Code's official `Channels` plugin instead — a real request-ID and allowlist protocol Anthropic maintains, not a homemade one parsing chat text.
+
+**You'd be staring at a tmux pane, not an answer.** A tmux-based multi-session setup can show you that a pane exists; it can't tell you whether the agent inside it is working, stuck waiting on you, or already done. Claude Code's native `--bg` sessions carry that state directly, so nothing's left guessing from a spinner.
+
+**You wouldn't pay for the same tokens twice.** No Agent SDK bolted on the side billing a separate API key — everything here runs through the Claude Code CLI, on the subscription you already have.
+
+**You wouldn't get a sponsored message typed into your own terminal** — not because nobody thought of it, but because it was checked seriously and ruled out: no model for a personal setup survives without third-party install volume, and the only way to inject content technically still costs real tokens on every use.
+
+None of that is a guess — every piece above replaced something that was cloned, read, and actually benchmarked before losing. Full writeups are in [`docs/`](./docs).
 
 ## 🧩 How skills get chosen: token cost is the filter
 
