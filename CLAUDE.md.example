@@ -23,6 +23,10 @@ transitive call tracing, change-impact radius):
 2. Restart the session and say "index this project".
 3. Prefer structural queries (search/trace/impact tools) over reading full
    file snippets when a structural answer is enough.
+4. Never rewrite `~/.claude/settings.json` wholesale when adding a hook --
+   always read the full file first and merge only the key you're touching,
+   since overwriting can silently drop hooks another tool (e.g.
+   codebase-memory-mcp) already registered there.
 
 ## Opening a project (remote control)
 When opening a project under your projects directory, use the shell helpers

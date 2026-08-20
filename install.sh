@@ -157,6 +157,29 @@ if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
   say "~/.claude/agents/. Trigger with the word 'devcorp' or 'build me X' in a session."
 fi
 
+# --- 4b. codebase-memory-mcp hook drift check/self-heal -----------------------
+if command -v codebase-memory-mcp >/dev/null 2>&1; then
+  missing_hooks="$(python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
+import json, sys, os
+
+path = sys.argv[1]
+settings = {}
+if os.path.exists(path):
+    with open(path) as f:
+        settings = json.load(f)
+
+hooks = settings.get("hooks", {})
+missing = [k for k in ("SessionStart", "SubagentStart") if k not in hooks]
+print(",".join(missing))
+PYEOF
+)"
+  if [ -n "$missing_hooks" ]; then
+    warn "codebase-memory-mcp is installed but its hooks ($missing_hooks) are missing from settings.json -- repairing..."
+    codebase-memory-mcp install -y
+    say "codebase-memory-mcp hooks repaired."
+  fi
+fi
+
 # --- 5. Next steps -------------------------------------------------------------
 cat <<'EOF'
 
