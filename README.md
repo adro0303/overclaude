@@ -8,6 +8,7 @@
   <a href="./install.sh"><img alt="Install" src="https://img.shields.io/badge/install-one%20script-3a4048"></a>
   <img alt="Ports" src="https://img.shields.io/badge/inbound%20ports-zero-2ea44f">
   <a href="https://github.com/adro0303/overclaude/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
+  <a href="#-support-nudge-opt-in-off-by-default"><img alt="Support nudge: opt-in, off by default" src="https://img.shields.io/badge/support%20nudge-opt--in%2C%20OFF%20by%20default-blueviolet"></a>
 </p>
 
 **[Claude Code](https://code.claude.com)'s ecosystem has a dozen good ideas scattered across a dozen separate repos. Overclaude is what happens when the best of them get evaluated, stripped down, and wired into *one* setup you install once — instead of five things you'd have to find, compare, and glue together yourself.**
@@ -25,8 +26,8 @@ That's the whole project: not a new tool, a curation. Every serious improvement 
 | 📱 Mobile app control | Claude Code's native **Remote Control** — no bot required |
 | 💬 Telegram control | Claude Code's native **Channels** plugin — official, not custom-built |
 | 🔔 Smart notifications | Original hooks in this repo, built after `tmux`/`Orca`-style orchestration was ruled out |
-| 🏢 Multi-agent build pipeline | [`DevCorp`](./skills/devcorp) — original skill + 7 subagents, model-routed (haiku recon → sonnet build → opus plan/audit), optional install |
-| 💛 Support nudge | **Opt-in, off by default.** One line/week, straight to your terminal, zero tokens — see "Support nudge" below |
+| 🏢 Multi-agent build pipeline | [`DevCorp`](./skills/devcorp) — original skill + 7 subagents, model-routed (haiku recon → sonnet build → opus plan/audit) |
+| 💛 Support nudge | 🟣 **The one opt-in piece — OFF by default.** One line/week, straight to your terminal, zero tokens — see "Support nudge" below |
 
 Full evaluation notes — what else was considered, and why it lost — are in [`docs/`](./docs) and [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
 
@@ -68,16 +69,23 @@ Every piece here had real competition, and Overclaude already ran the bake-off s
 
 **You wouldn't pay for the same tokens twice.** No Agent SDK bolted on the side billing a separate API key — everything here runs through the Claude Code CLI, on the subscription you already have.
 
-**A sponsored message typed into your own terminal is opt-in, off by default, and never costs you a token.** `install.sh` asks — same y/N prompt as every other optional piece here, skipping it is exactly as easy as accepting it. Say yes and you get one line, at most once a week, written straight to your terminal device; say no (the default) and nothing changes. See "💛 Support nudge" below for exactly how and why it can't touch Claude's context.
+**A sponsored message typed into your own terminal is opt-in, OFF by default, and never costs you a token.** It's the one thing `install.sh` still asks about — everything else installs automatically. Say nothing (just hit enter) and you get the default: no nudge, ever. Say yes and you get one line, at most once a week, written straight to your terminal device. See "💛 Support nudge" below for exactly how and why it can't touch Claude's context.
 
 None of that is a guess — every one of those was a real fork with more than one serious option on the table, and this is the side that won each time. Full writeups of the runners-up are in [`docs/`](./docs).
 
 ## 💛 Support nudge (opt-in, off by default)
 
-`install.sh` has one more optional prompt: a one-line nudge to star or support the
-project, at most once a week. It is **not installed unless you say yes**, and skipping
-it is exactly as easy as accepting it — same `[y/N]` prompt as every other optional
-piece in this repo.
+> [!IMPORTANT]
+> **This is the only opt-in thing in the whole repo, and it defaults to OFF.**
+> Everything else in Overclaude installs automatically (see [Quickstart](#-quickstart)).
+> This one still asks — a plain `[y/N]` prompt in `install.sh` — precisely *because*
+> it's the only piece that runs on every session start whether you use it or not.
+> Press enter, answer anything but `y`, or do nothing at all: **you get zero nudges,
+> permanently.** There is no other switch, config, or default anywhere that turns
+> this on for you.
+
+`install.sh` has one prompt: a one-line nudge to star or support the project, at most
+once a week. It is **not installed unless you explicitly say yes**.
 
 If you enable it, here's exactly what happens, no more:
 
