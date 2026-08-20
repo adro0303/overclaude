@@ -89,41 +89,46 @@ Same filter, applied one level up: it's why `codebase-memory-mcp` stays scoped p
 ## 🏗️ Architecture
 
 ```mermaid
-flowchart TB
-    subgraph Mobile["📱 Your phone"]
-        App["Official Claude app / claude.ai/code"]
-        TG["Telegram (optional)"]
+flowchart LR
+    subgraph Phone["📱 Your phone — in"]
+        App["Claude app / claude.ai/code"]
+        TG["Telegram bot"]
     end
 
     subgraph PC["💻 Your machine"]
-        RC["claude remote-control"]
-        CH["claude --bg --channels telegram"]
-        Hook["PostToolUseFailure hook"]
-        StopHook["Stop hook (stop-notify)"]
-        CBM["Code graph MCP (per project)"]
-        AR["Internet-access skill (on demand)"]
-        Claude["Claude Code session"]
+        RC["remote-control"]
+        CH["--channels telegram"]
+        Claude(["Claude Code session"])
+        CBM["Code graph MCP<br/>per project"]
+        AR["Web-access skill<br/>on demand"]
+        DC["DevCorp pipeline<br/>optional"]
+        Hook["build/test hook"]
+        StopHook["stop-notify hook"]
     end
 
-    App -- "HTTPS, outbound only" --> RC
-    TG -- "long-poll, outbound only" --> CH
-    RC --> Claude
-    CH --> Claude
+    subgraph Back["🔔 Back to your phone"]
+        Push["Native mobile push"]
+        TGmsg["Telegram message"]
+        Desk["Desktop notification"]
+    end
+
+    App -- "HTTPS, outbound only" --> RC --> Claude
+    TG -- "long-poll, outbound only" --> CH --> Claude
     Claude --> CBM
     Claude --> AR
-    Claude -. "failed test/build" .-> Hook
-    Hook -. "desktop notification" .-> PC
-    Claude -. "turn finished" .-> StopHook
-    StopHook -. "sound" .-> PC
-    StopHook -. "Telegram message" .-> TG
-    Claude -. "native push (if RC connected)" .-> App
+    Claude --> DC
+    Claude -. "test/build fails" .-> Hook --> Desk
+    Claude -. "turn ends" .-> StopHook --> TGmsg
+    StopHook --> Push
 
     classDef mobile fill:#1b2a33,stroke:#4fbac9,stroke-width:1.5px,color:#e7ecee
     classDef machine fill:#241a12,stroke:#ef5b2c,stroke-width:1.5px,color:#f3f2ee
     classDef core fill:#ef5b2c,stroke:#ef5b2c,color:#141210,font-weight:bold
+    classDef back fill:#0f2419,stroke:#2ea44f,stroke-width:1.5px,color:#e7ecee
     class App,TG mobile
-    class RC,CH,Hook,StopHook,CBM,AR machine
+    class RC,CH,Hook,StopHook,CBM,AR,DC machine
     class Claude core
+    class Push,TGmsg,Desk back
 ```
 
 Nothing here opens an inbound port. Both mobile paths are outbound connections initiated by your machine or by Telegram's own servers polling your bot — there is nothing on the public internet pointed at your PC.
