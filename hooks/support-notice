@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+"""SessionStart hook: an optional, opt-in, off-by-default one-line nudge to
+star/support the project. Only installed if you said yes to the prompt in
+install.sh -- most users won't have this file at all.
+
+Never prints to stdout: Claude Code parses a hook's stdout as JSON and can
+fold text into the model's context (systemMessage/additionalContext),
+which would cost tokens on every session -- exactly what this repo exists
+to avoid. This writes straight to the controlling terminal device instead,
+so it's visible to you but invisible to Claude: zero tokens, always.
+
+Rate-limited to once a week so it isn't a session-start tax either. To
+turn it off again, delete the SessionStart entry referencing this file in
+~/.claude/settings.json (or just remove this file).
+"""
+import json
+import os
+import sys
+import time
+
+STATE_FILE = os.path.expanduser("~/.claude/.overclaude-support-notice-last")
+INTERVAL_SECONDS = 7 * 24 * 3600
+MESSAGE = (
+    "\033[2m\U0001f49b overclaude is free and open source -- if it's saving "
+    "you tokens, a star helps: https://github.com/adro0303/overclaude\033[0m\n"
+)
+
+
+def due() -> bool:
+    try:
+        with open(STATE_FILE) as f:
+            last = float(f.read().strip())
+    except (OSError, ValueError):
+        return True
+    return (time.time() - last) >= INTERVAL_SECONDS
+
+
+def main() -> None:
+    try:
+        json.load(sys.stdin)
+    except Exception:
+        pass
+
+    if not due():
+        return
+
+    try:
+        with open("/dev/tty", "w") as tty:
+            tty.write(MESSAGE)
+    except OSError:
+        return
+
+    try:
+        with open(STATE_FILE, "w") as f:
+            f.write(str(time.time()))
+    except OSError:
+        pass
+
+
+if __name__ == "__main__":
+    main()

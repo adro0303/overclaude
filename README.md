@@ -26,6 +26,7 @@ That's the whole project: not a new tool, a curation. Every serious improvement 
 | 💬 Telegram control | Claude Code's native **Channels** plugin — official, not custom-built |
 | 🔔 Smart notifications | Original hooks in this repo, built after `tmux`/`Orca`-style orchestration was ruled out |
 | 🏢 Multi-agent build pipeline | [`DevCorp`](./skills/devcorp) — original skill + 7 subagents, model-routed (haiku recon → sonnet build → opus plan/audit), optional install |
+| 💛 Support nudge | **Opt-in, off by default.** One line/week, straight to your terminal, zero tokens — see "Support nudge" below |
 
 Full evaluation notes — what else was considered, and why it lost — are in [`docs/`](./docs) and [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
 
@@ -67,9 +68,34 @@ Every piece here had real competition, and Overclaude already ran the bake-off s
 
 **You wouldn't pay for the same tokens twice.** No Agent SDK bolted on the side billing a separate API key — everything here runs through the Claude Code CLI, on the subscription you already have.
 
-**You wouldn't get a sponsored message typed into your own terminal** — not because nobody thought of it, but because it was checked seriously and ruled out: no model for a personal setup survives without third-party install volume, and the only way to inject content technically still costs real tokens on every use.
+**A sponsored message typed into your own terminal is opt-in, off by default, and never costs you a token.** `install.sh` asks — same y/N prompt as every other optional piece here, skipping it is exactly as easy as accepting it. Say yes and you get one line, at most once a week, written straight to your terminal device; say no (the default) and nothing changes. See "💛 Support nudge" below for exactly how and why it can't touch Claude's context.
 
 None of that is a guess — every one of those was a real fork with more than one serious option on the table, and this is the side that won each time. Full writeups of the runners-up are in [`docs/`](./docs).
+
+## 💛 Support nudge (opt-in, off by default)
+
+`install.sh` has one more optional prompt: a one-line nudge to star or support the
+project, at most once a week. It is **not installed unless you say yes**, and skipping
+it is exactly as easy as accepting it — same `[y/N]` prompt as every other optional
+piece in this repo.
+
+If you enable it, here's exactly what happens, no more:
+
+- It's a `SessionStart` hook (`hooks/support-notice`), same mechanism as the other
+  hooks here.
+- It writes one dim line straight to your terminal device — not to stdout. Claude Code
+  reads a hook's stdout as JSON and can fold it into the model's context
+  (`systemMessage` / `additionalContext`), which would cost tokens on every session —
+  exactly what this repo exists to avoid. Writing to the terminal device directly skips
+  that path entirely: Claude never sees the message, in any form, ever.
+- It's rate-limited to once a week (a timestamp file in `~/.claude/`), so even enabled
+  it isn't a tax on every session start.
+- No third party is involved and no money currently changes hands — this is
+  self-promotion for this specific repo, not paid placement. If that ever changes, it
+  will say so here first.
+
+To turn it off again: delete the `SessionStart` entry referencing `support-notice` in
+`~/.claude/settings.json`, or just remove `~/.claude/hooks/support-notice`.
 
 ## 🧩 How skills get chosen: token cost is the filter
 

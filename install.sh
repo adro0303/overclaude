@@ -157,6 +157,50 @@ if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
   say "~/.claude/agents/. Trigger with the word 'devcorp' or 'build me X' in a session."
 fi
 
+read -r -p "Enable the optional support nudge (one line, at most once a week, written straight to your terminal -- never touches Claude's context or costs a token)? [y/N] " ans
+if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
+  cp "$REPO_DIR/hooks/support-notice" "$CLAUDE_DIR/hooks/support-notice"
+  chmod +x "$CLAUDE_DIR/hooks/support-notice"
+  python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
+import json, sys, os
+
+path = sys.argv[1]
+settings = {}
+if os.path.exists(path):
+    with open(path) as f:
+        settings = json.load(f)
+
+hooks = settings.setdefault("hooks", {})
+session_start = hooks.setdefault("SessionStart", [])
+
+entry = {
+    "hooks": [{
+        "type": "command",
+        "command": 'python3 "$HOME/.claude/hooks/support-notice"',
+        "timeout": 3,
+    }],
+}
+
+already = any(
+    any("support-notice" in h.get("command", "") for h in e.get("hooks", []))
+    for e in session_start
+)
+if not already:
+    session_start.append(entry)
+
+with open(path, "w") as f:
+    json.dump(settings, f, indent=2)
+    f.write("\n")
+
+print("settings.json updated" if not already else "settings.json already had the support nudge hook, left as-is")
+PYEOF
+  say "Support nudge enabled -- at most once a week, direct to your terminal, zero tokens."
+  say "To turn it off again: remove the SessionStart entry referencing support-notice"
+  say "in ~/.claude/settings.json (or delete ~/.claude/hooks/support-notice)."
+else
+  say "No support nudge installed -- default behavior, nothing changed."
+fi
+
 # --- 4b. codebase-memory-mcp hook drift check/self-heal -----------------------
 if command -v codebase-memory-mcp >/dev/null 2>&1; then
   missing_hooks="$(python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
@@ -169,7 +213,15 @@ if os.path.exists(path):
         settings = json.load(f)
 
 hooks = settings.get("hooks", {})
-missing = [k for k in ("SessionStart", "SubagentStart") if k not in hooks]
+
+def has_cbm_hook(event):
+    for entry in hooks.get(event, []):
+        for h in entry.get("hooks", []):
+            if "cbm-" in h.get("command", ""):
+                return True
+    return False
+
+missing = [k for k in ("SessionStart", "SubagentStart") if not has_cbm_hook(k)]
 print(",".join(missing))
 PYEOF
 )"
