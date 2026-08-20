@@ -25,6 +25,7 @@ That's the whole project: not a new tool, a curation. Every serious improvement 
 | 📱 Mobile app control | Claude Code's native **Remote Control** — no bot required |
 | 💬 Telegram control | Claude Code's native **Channels** plugin — official, not custom-built |
 | 🔔 Smart notifications | Original hooks in this repo, built after `tmux`/`Orca`-style orchestration was ruled out |
+| 🏢 Multi-agent build pipeline | [`DevCorp`](./skills/devcorp) — original skill + 7 subagents, model-routed (haiku recon → sonnet build → opus plan/audit), optional install |
 
 Full evaluation notes — what else was considered, and why it lost — are in [`docs/`](./docs) and [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
 
@@ -123,7 +124,7 @@ The installer is interactive and asks before touching anything optional. It alwa
 - Installs the turn-completion hook (sound + Telegram ping) and enables native mobile push notifications
 - Wires `cproj` / `ctel` into your shell
 
-It only installs the code-graph MCP or the internet-access skill if you say yes, and it never overwrites your existing `~/.claude/settings.json` or `~/.claude/CLAUDE.md` — it merges in what's missing.
+It only installs the code-graph MCP, the internet-access skill, or DevCorp if you say yes, and it never overwrites your existing `~/.claude/settings.json` or `~/.claude/CLAUDE.md` — it merges in what's missing.
 
 ### Connect your phone (native Remote Control, zero setup)
 
@@ -153,6 +154,8 @@ Once Telegram is paired, `hooks/stop-notify` (installed automatically) reuses th
 - [`hooks/build-test-alert`](./hooks/build-test-alert) — the build/test-failure notification hook, read it before you trust it
 - [`hooks/stop-notify`](./hooks/stop-notify) — the turn-completion hook (sound + Telegram ping), read it before you trust it
 - [`shell/aliases.zsh`](./shell/aliases.zsh) — `cproj` / `ctel`
+- [`skills/devcorp/`](./skills/devcorp) — DevCorp pipeline skill + [`references/`](./skills/devcorp/references) (phase gates, checklists, token-budget rationale)
+- [`agents/devcorp/`](./agents/devcorp) — the 7 subagents DevCorp routes to (`dc-scout` through `dc-security`), installed flat into `~/.claude/agents/`
 - [`.env.example`](./.env.example) — the only environment variables this repo cares about
 
 ## 🔒 Security notes

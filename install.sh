@@ -147,6 +147,16 @@ if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
   agent-reach install --env=auto --system
 fi
 
+read -r -p "Install DevCorp (multi-agent build pipeline skill + 7 subagents, original)? [y/N] " ans
+if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
+  mkdir -p "$CLAUDE_DIR/skills/devcorp" "$CLAUDE_DIR/agents"
+  cp -r "$REPO_DIR/skills/devcorp/." "$CLAUDE_DIR/skills/devcorp/"
+  cp "$REPO_DIR"/agents/devcorp/*.md "$CLAUDE_DIR/agents/"
+  say "DevCorp installed: skill at ~/.claude/skills/devcorp, 7 subagents (dc-scout,"
+  say "dc-product, dc-architect, dc-frontend, dc-backend, dc-qa, dc-security) at"
+  say "~/.claude/agents/. Trigger with the word 'devcorp' or 'build me X' in a session."
+fi
+
 # --- 5. Next steps -------------------------------------------------------------
 cat <<'EOF'
 
@@ -159,6 +169,11 @@ Done. What's automated vs. what needs you:
       inputNeededNotifEnabled) -- only reaches your phone once Remote
       Control is connected to the session, see below
     - cproj / ctel shell helpers
+
+  Optional (if you said yes above):
+    - codebase-memory-mcp / Agent-Reach / DevCorp, each installed only on
+      confirmation -- see README.md for what each one costs and when it's
+      worth it.
 
   Needs you (one-time, both documented in README.md):
     - `claude remote-control` inside a project, then pair the official
