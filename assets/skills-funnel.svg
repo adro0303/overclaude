@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" width="960" height="300" role="img" aria-label="Skill candidates are swept from the Claude Code skill ecosystem, then filtered: rejected if they carry a standing context cost or duplicate a native tool, kept only if they load on demand and beat what already exists. Agent-Reach and DevCorp survived that filter.">
+  <defs>
+    <linearGradient id="sbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12161b"/>
+      <stop offset="100%" stop-color="#181d24"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="960" height="300" fill="url(#sbg)"/>
+
+  <!-- static connectors -->
+  <g fill="none" stroke="#3a4048" stroke-width="2">
+    <path d="M190,140 L250,140"/>
+    <path d="M470,140 L500,140"/>
+    <path d="M345,167 L345,208"/>
+    <path d="M610,167 L610,208"/>
+  </g>
+
+  <!-- kept path: candidate -> gate1 -> gate2 -> installed (animated) -->
+  <g fill="none" stroke="#ef5b2c" stroke-width="2" stroke-dasharray="4 10" opacity="0.85">
+    <path d="M440,140 C460,140 480,140 500,140">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.6s" repeatCount="indefinite"/>
+    </path>
+    <path d="M720,140 C745,140 755,140 775,140">
+      <animate attributeName="stroke-dashoffset" values="0;-56" dur="1.6s" begin="0.2s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- rejected branch labels -->
+  <g font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#6d7680">
+    <text x="352" y="192">no</text>
+    <text x="617" y="192">no</text>
+    <text x="452" y="132">yes</text>
+    <text x="727" y="132">yes</text>
+  </g>
+
+  <!-- stage 1: candidate pool -->
+  <rect x="20" y="113" width="170" height="54" rx="10" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+  <text x="105" y="135" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#e7ecee">Skill search sweep</text>
+  <text x="105" y="152" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10.5" fill="#9aa4ab">across the skill ecosystem</text>
+
+  <!-- gate 1 -->
+  <rect x="250" y="113" width="220" height="54" rx="10" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+  <text x="360" y="135" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#e7ecee">Zero cost until invoked?</text>
+  <text x="360" y="152" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10.5" fill="#9aa4ab">no fixed schema tax per session</text>
+
+  <!-- gate 2 -->
+  <rect x="500" y="113" width="220" height="54" rx="10" fill="#1b2126" stroke="#3a4048" stroke-width="1.5"/>
+  <text x="610" y="135" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#e7ecee">Beats what's native?</text>
+  <text x="610" y="152" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10.5" fill="#9aa4ab">or already installed</text>
+
+  <!-- kept: destination -->
+  <rect x="775" y="80" width="165" height="120" rx="14" fill="#ef5b2c"/>
+  <text x="857" y="103" text-anchor="middle" font-family="'JetBrains Mono','Fira Code',ui-monospace,monospace" font-size="14" font-weight="700" fill="#141210">INSTALLED</text>
+
+  <rect x="790" y="112" width="135" height="30" rx="7" fill="#241a12"/>
+  <text x="857" y="131" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#f3f2ee"><tspan font-weight="700">Agent-Reach</tspan></text>
+
+  <rect x="790" y="150" width="135" height="30" rx="7" fill="#241a12"/>
+  <text x="857" y="169" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#f3f2ee"><tspan font-weight="700">DevCorp</tspan></text>
+
+  <text x="857" y="192" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10" fill="#241a12">on demand, not standing</text>
+
+  <!-- rejected pills -->
+  <rect x="250" y="208" width="220" height="42" rx="9" fill="#1b1416" stroke="#4a2a2a" stroke-width="1.5"/>
+  <text x="360" y="226" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#d98c8c">rejected</text>
+  <text x="360" y="241" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10" fill="#9a7373">standing MCP-style tax</text>
+
+  <rect x="500" y="208" width="220" height="42" rx="9" fill="#1b1416" stroke="#4a2a2a" stroke-width="1.5"/>
+  <text x="610" y="226" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#d98c8c">rejected</text>
+  <text x="610" y="241" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="10" fill="#9a7373">duplicates a native tool</text>
+
+  <text x="480" y="278" text-anchor="middle" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11" fill="#6d7680">Same filter that keeps codebase-memory-mcp project-scoped instead of global.</text>
+</svg>

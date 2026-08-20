@@ -69,6 +69,16 @@ None of this is a pile of tools installed for their own sake. Every piece above 
 
 Full writeups of what was compared and why live in [`docs/`](./docs).
 
+## 🧩 How skills get chosen: token cost is the filter
+
+Every skill in this repo — [`Agent-Reach`](https://github.com/Panniantong/Agent-Reach) and the original [`DevCorp`](./skills/devcorp) — went through the same sweep: search the Claude Code skill ecosystem for candidates, then filter hard for what each one costs when it's *not* being used. A skill only earns a place here if it loads on demand, with zero fixed tool-schema tax on every session, and only if it actually beats what's already native or already installed. Anything that would add a standing cost, or just duplicate something Claude Code already does natively, gets cut before it reaches this repo.
+
+<p align="center">
+  <img src="./assets/skills-funnel.svg" alt="Skill candidates are swept from the Claude Code skill ecosystem, then filtered: rejected if they carry a standing context cost or duplicate a native tool, kept only if they load on demand and beat what already exists. Agent-Reach and DevCorp survived that filter." width="100%">
+</p>
+
+Same filter, applied one level up: it's why `codebase-memory-mcp` stays scoped per-project instead of registered globally (see [`CLAUDE.md.example`](./CLAUDE.md.example)), and why Agent-Reach only kicks in for platforms native `WebFetch`/`WebSearch` genuinely can't handle — logged-in sites, heavy-JS pages, video transcripts — never for a generic page or bare URL, even when the skill's own docs say "MUST USE".
+
 ## 🏗️ Architecture
 
 ```mermaid
