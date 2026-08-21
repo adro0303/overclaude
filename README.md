@@ -9,6 +9,7 @@
   <img alt="Ports" src="https://img.shields.io/badge/inbound%20ports-zero-2ea44f">
   <a href="https://github.com/adro0303/overclaude/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
   <a href="#-support-nudge-opt-in-off-by-default"><img alt="Support nudge: opt-in, off by default" src="https://img.shields.io/badge/support%20nudge-opt--in%2C%20OFF%20by%20default-blueviolet"></a>
+  <a href="./skills/devcorp/references/clean-code.md"><img alt="DevCorp gate: SOLID + DRY + YAGNI" src="https://img.shields.io/badge/DevCorp%20gate-SOLID%20%2B%20DRY%20%2B%20YAGNI-2ea44f"></a>
 </p>
 
 **[Claude Code](https://code.claude.com)'s ecosystem has a dozen good ideas scattered across a dozen separate repos. Overclaude is what happens when the best of them get evaluated, stripped down, and wired into *one* setup you install once — instead of five things you'd have to find, compare, and glue together yourself.**
@@ -26,7 +27,7 @@ That's the whole project: not a new tool, a curation. Every serious improvement 
 | 📱 Mobile app control | Claude Code's native **Remote Control** — no bot required |
 | 💬 Telegram control | Claude Code's native **Channels** plugin — official, not custom-built |
 | 🔔 Smart notifications | Original hooks in this repo, built after `tmux`/`Orca`-style orchestration was ruled out |
-| 🏢 Multi-agent build pipeline | [`DevCorp`](./skills/devcorp) — original skill + 7 subagents, model-routed (haiku recon → sonnet build → opus plan/audit) |
+| 🏢 Multi-agent build pipeline | [`DevCorp`](./skills/devcorp) — original skill + 7 subagents, model-routed (haiku recon → sonnet build → opus plan/audit), gated on [clean code + SOLID + agile discipline](./skills/devcorp/references/clean-code.md) |
 | 💛 Support nudge | 🟣 **The one opt-in piece — OFF by default.** One line/week, straight to your terminal, zero tokens — see "Support nudge" below |
 
 Full evaluation notes — what else was considered, and why it lost — are in [`docs/`](./docs) and [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md).
@@ -121,6 +122,23 @@ Same filter, applied one level up: it's why `codebase-memory-mcp` stays scoped p
 - **Caveman output between agents.** Subagents hand work back in four lines — `GOAL / FILES / CONSTRAINTS / DONE WHEN` — not prose. Full sentences are reserved for things a human actually reads: commits, PRs, security findings, the final summary to you.
 - **Raw output never crosses back.** `dc-scout` might grep half the repo to find what it's looking for; only a `path:line` table returns to the orchestrator. The grep noise dies inside that subagent's own context instead of bloating yours.
 - **Phases that don't apply get skipped, not run-and-shrugged.** A typo fix never spins up SPEC/ARCH/QA/SECURITY at all — those are calls that are never made, not calls made cheaply.
+- **Clean code is a gate, not a suggestion.** ARCH and BUILD both load [`clean-code.md`](./skills/devcorp/references/clean-code.md) — single responsibility, DRY (grep before you write), SOLID applied only where there's a real class/interface, YAGNI/agile discipline. A plan or a diff that duplicates existing logic, piles unrelated jobs into one file, or builds speculative abstractions nobody asked for isn't "done," same as a plan that fails a test isn't done.
+
+```mermaid
+flowchart LR
+    SPEC["SPEC<br/>dc-product"] --> ARCH["ARCH<br/>dc-architect"]
+    ARCH --> BUILD["BUILD<br/>dc-frontend + dc-backend"]
+    BUILD --> QA["QA<br/>dc-qa"] --> SEC["SECURITY<br/>dc-security"] --> SHIP["SHIP"]
+
+    CC[["clean-code.md<br/>SRP · OCP · LSP · ISP · DIP<br/>DRY · naming · YAGNI"]]
+    CC -. "plan must satisfy" .-> ARCH
+    CC -. "diff must satisfy" .-> BUILD
+
+    classDef phase fill:#241a12,stroke:#4fbac9,stroke-width:1.5px,color:#f3f2ee
+    classDef gate fill:#ef5b2c,stroke:#ef5b2c,color:#141210,font-weight:bold
+    class SPEC,ARCH,BUILD,QA,SEC,SHIP phase
+    class CC gate
+```
 
 ## 🏗️ Architecture
 
