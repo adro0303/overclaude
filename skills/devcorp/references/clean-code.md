@@ -1,4 +1,4 @@
-# Clean code — structure, reuse, SOLID-when-it-earns-it
+# Clean code — structure, reuse, OOP + SOLID when they earn it
 
 For `dc-architect` (plan against this) and `dc-frontend`/`dc-backend` (build
 against this). Load once, alongside `frontend.md`/`backend.md`, at ARCH/BUILD
