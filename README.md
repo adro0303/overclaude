@@ -213,6 +213,7 @@ Once Telegram is paired, `hooks/stop-notify` (installed automatically) reuses th
 - [`hooks/build-test-alert`](./hooks/build-test-alert) — the build/test-failure notification hook, read it before you trust it
 - [`hooks/stop-notify`](./hooks/stop-notify) — the turn-completion hook (sound + Telegram ping), read it before you trust it
 - [`shell/aliases.zsh`](./shell/aliases.zsh) — `cproj` / `ctel`, plus the `OVERCLAUDE_GRAPH_THRESHOLD` auto-wiring for the code graph
+- [`install/register_hook.py`](./install/register_hook.py) — the one place `install.sh` writes hook entries into `settings.json`, shared by all three hooks instead of repeated inline
 - [`skills/devcorp/`](./skills/devcorp) — DevCorp pipeline skill + [`references/`](./skills/devcorp/references) (phase gates, checklists, token-budget rationale)
 - [`agents/devcorp/`](./agents/devcorp) — the 7 subagents DevCorp routes to (`dc-scout` through `dc-security`), installed flat into `~/.claude/agents/`
 - [`.env.example`](./.env.example) — the only environment variables this repo cares about

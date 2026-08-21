@@ -22,41 +22,9 @@ mkdir -p "$CLAUDE_DIR/hooks"
 cp "$REPO_DIR/hooks/build-test-alert" "$CLAUDE_DIR/hooks/build-test-alert"
 chmod +x "$CLAUDE_DIR/hooks/build-test-alert"
 
-python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
-import json, sys, os
-
-path = sys.argv[1]
-settings = {}
-if os.path.exists(path):
-    with open(path) as f:
-        settings = json.load(f)
-
-hooks = settings.setdefault("hooks", {})
-post_failure = hooks.setdefault("PostToolUseFailure", [])
-
-entry = {
-    "matcher": "Bash",
-    "hooks": [{
-        "type": "command",
-        "command": 'python3 "$HOME/.claude/hooks/build-test-alert"',
-        "timeout": 5,
-    }],
-}
-
-already = any(
-    e.get("matcher") == "Bash"
-    and any("build-test-alert" in h.get("command", "") for h in e.get("hooks", []))
-    for e in post_failure
-)
-if not already:
-    post_failure.append(entry)
-
-with open(path, "w") as f:
-    json.dump(settings, f, indent=2)
-    f.write("\n")
-
-print("settings.json updated" if not already else "settings.json already had the hook, left as-is")
-PYEOF
+python3 "$REPO_DIR/install/register_hook.py" "$CLAUDE_DIR/settings.json" \
+  --event PostToolUseFailure --matcher Bash \
+  --command 'python3 "$HOME/.claude/hooks/build-test-alert"' --timeout 5
 
 if command -v notify-send >/dev/null 2>&1; then
   say "notify-send found -- desktop notifications will work."
@@ -69,43 +37,24 @@ say "Installing the turn-completion notification hook..."
 cp "$REPO_DIR/hooks/stop-notify" "$CLAUDE_DIR/hooks/stop-notify"
 chmod +x "$CLAUDE_DIR/hooks/stop-notify"
 
-python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
-import json, sys, os
-
-path = sys.argv[1]
-settings = {}
-if os.path.exists(path):
-    with open(path) as f:
-        settings = json.load(f)
-
-hooks = settings.setdefault("hooks", {})
-stop_hooks = hooks.setdefault("Stop", [])
-
-entry = {
-    "hooks": [{
-        "type": "command",
-        "command": 'python3 "$HOME/.claude/hooks/stop-notify"',
-        "timeout": 8,
-    }],
-}
-
-already = any(
-    any("stop-notify" in h.get("command", "") for h in e.get("hooks", []))
-    for e in stop_hooks
-)
-if not already:
-    stop_hooks.append(entry)
+python3 "$REPO_DIR/install/register_hook.py" "$CLAUDE_DIR/settings.json" \
+  --event Stop --command 'python3 "$HOME/.claude/hooks/stop-notify"' --timeout 8
 
 # Let Claude use its native mobile push (PushNotification tool) once Remote
 # Control is connected -- opt-in flags, never overwritten if already set.
+python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
+import json, sys
+
+path = sys.argv[1]
+with open(path) as f:
+    settings = json.load(f)
+
 settings.setdefault("agentPushNotifEnabled", True)
 settings.setdefault("inputNeededNotifEnabled", True)
 
 with open(path, "w") as f:
     json.dump(settings, f, indent=2)
     f.write("\n")
-
-print("settings.json updated" if not already else "settings.json already had the Stop hook, left as-is")
 PYEOF
 
 if command -v paplay >/dev/null 2>&1; then
@@ -165,43 +114,12 @@ say "DevCorp installed: skill at ~/.claude/skills/devcorp, 7 subagents (dc-scout
 say "dc-product, dc-architect, dc-frontend, dc-backend, dc-qa, dc-security) at"
 say "~/.claude/agents/. Trigger with the word 'devcorp' or 'build me X' in a session."
 
-read -r -p "Enable the optional support nudge (one line, at most once a week, written straight to your terminal -- never touches Claude's context or costs a token)? [y/N] " ans
+read -r -p "Enable the optional support nudge (one line, EVERY session by default -- configurable via OVERCLAUDE_SUPPORT_NUDGE_INTERVAL_SECONDS -- written straight to your terminal, never touches Claude's context or costs a token)? [y/N] " ans
 if [[ "${ans:-}" =~ ^[Yy]$ ]]; then
   cp "$REPO_DIR/hooks/support-notice" "$CLAUDE_DIR/hooks/support-notice"
   chmod +x "$CLAUDE_DIR/hooks/support-notice"
-  python3 - "$CLAUDE_DIR/settings.json" <<'PYEOF'
-import json, sys, os
-
-path = sys.argv[1]
-settings = {}
-if os.path.exists(path):
-    with open(path) as f:
-        settings = json.load(f)
-
-hooks = settings.setdefault("hooks", {})
-session_start = hooks.setdefault("SessionStart", [])
-
-entry = {
-    "hooks": [{
-        "type": "command",
-        "command": 'python3 "$HOME/.claude/hooks/support-notice"',
-        "timeout": 3,
-    }],
-}
-
-already = any(
-    any("support-notice" in h.get("command", "") for h in e.get("hooks", []))
-    for e in session_start
-)
-if not already:
-    session_start.append(entry)
-
-with open(path, "w") as f:
-    json.dump(settings, f, indent=2)
-    f.write("\n")
-
-print("settings.json updated" if not already else "settings.json already had the support nudge hook, left as-is")
-PYEOF
+  python3 "$REPO_DIR/install/register_hook.py" "$CLAUDE_DIR/settings.json" \
+    --event SessionStart --command 'python3 "$HOME/.claude/hooks/support-notice"' --timeout 3
   say "Support nudge enabled -- at most once a week, direct to your terminal, zero tokens."
   say "To turn it off again: remove the SessionStart entry referencing support-notice"
   say "in ~/.claude/settings.json (or delete ~/.claude/hooks/support-notice)."
@@ -245,18 +163,20 @@ cat <<'EOF'
 
 Done. What's automated vs. what needs you:
 
-  Automated:
+  Automated (every install, no prompts):
     - Build/test failure -> desktop notification hook
     - Turn-completion ping -> sound + Telegram (hooks/stop-notify)
     - Native mobile push notifications enabled (agentPushNotifEnabled,
       inputNeededNotifEnabled) -- only reaches your phone once Remote
       Control is connected to the session, see below
     - cproj / ctel shell helpers
-
-  Optional (if you said yes above):
-    - codebase-memory-mcp / Agent-Reach / DevCorp, each installed only on
-      confirmation -- see README.md for what each one costs and when it's
+    - codebase-memory-mcp / Agent-Reach / DevCorp (skill + 7 subagents,
+      including the clean-code/SOLID/agile checklist DevCorp builds
+      against) -- see README.md for what each one costs and when it's
       worth it.
+
+  Optional (only the one [y/N] prompt above):
+    - The support nudge -- everything else installs automatically.
 
   Needs you (one-time, both documented in README.md):
     - `claude remote-control` inside a project, then pair the official

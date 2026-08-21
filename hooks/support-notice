@@ -9,30 +9,113 @@ which would cost tokens on every session -- exactly what this repo exists
 to avoid. This writes straight to the controlling terminal device instead,
 so it's visible to you but invisible to Claude: zero tokens, always.
 
-Rate-limited to once a week so it isn't a session-start tax either. To
-turn it off again, delete the SessionStart entry referencing this file in
-~/.claude/settings.json (or just remove this file).
+Shown every session by default (that's the tradeoff of opting in at all --
+see the README). Set OVERCLAUDE_SUPPORT_NUDGE_INTERVAL_SECONDS to space it
+out instead (e.g. 604800 for once a week); 0 or unset means every session.
+
+The message itself is a static local string UNLESS you set
+OVERCLAUDE_SUPPORT_NUDGE_URL, in which case it's fetched from that URL
+instead (short timeout, cached locally, refreshed at most every
+OVERCLAUDE_SUPPORT_NUDGE_REFRESH_SECONDS -- default 6h -- so a slow or dead
+endpoint never delays session start). This is how a sponsor slot would
+actually work: point the URL at content you control and swap it whenever
+you want, no reinstall needed for anyone who already opted in. Nobody gets
+this URL set for them -- it's unset by default, for every user including
+the repo's own author, until deliberately configured. Fetched text is
+sanitized (single line, printable characters only, length-capped) before
+it's ever written to your terminal, since it's untrusted input once it's
+coming over the network.
+
+To turn this hook off again: delete the SessionStart entry referencing
+this file in ~/.claude/settings.json (or just remove this file).
 """
 import json
 import os
+import re
 import sys
 import time
+import urllib.request
 
 STATE_FILE = os.path.expanduser("~/.claude/.overclaude-support-notice-last")
-INTERVAL_SECONDS = 7 * 24 * 3600
-MESSAGE = (
-    "\033[2m\U0001f49b overclaude is free and open source -- if it's saving "
-    "you tokens, a star helps: https://github.com/adro0303/overclaude\033[0m\n"
+CACHE_FILE = os.path.expanduser("~/.claude/.overclaude-support-notice-cache")
+INTERVAL_SECONDS = int(os.environ.get("OVERCLAUDE_SUPPORT_NUDGE_INTERVAL_SECONDS", "0") or "0")
+REFRESH_SECONDS = int(os.environ.get("OVERCLAUDE_SUPPORT_NUDGE_REFRESH_SECONDS", str(6 * 3600)))
+REMOTE_URL = os.environ.get("OVERCLAUDE_SUPPORT_NUDGE_URL", "").strip()
+FETCH_TIMEOUT = 2
+MAX_MESSAGE_LEN = 240
+
+DEFAULT_MESSAGE = (
+    "\U0001f49b overclaude is free and open source -- if it's saving you "
+    "tokens, a star helps: https://github.com/adro0303/overclaude"
 )
 
 
 def due() -> bool:
+    if INTERVAL_SECONDS <= 0:
+        return True
     try:
         with open(STATE_FILE) as f:
             last = float(f.read().strip())
     except (OSError, ValueError):
         return True
     return (time.time() - last) >= INTERVAL_SECONDS
+
+
+def sanitize(text: str) -> str:
+    first_line = text.splitlines()[0] if text.splitlines() else ""
+    printable = "".join(ch for ch in first_line if ch.isprintable())
+    return printable.strip()[:MAX_MESSAGE_LEN]
+
+
+def fetch_remote(url: str) -> str | None:
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "overclaude-support-notice"})
+        with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+            raw = resp.read(4096).decode("utf-8", errors="replace")
+    except Exception:
+        return None
+    cleaned = sanitize(raw)
+    return cleaned or None
+
+
+def cached_remote_due_for_refresh() -> bool:
+    try:
+        return (time.time() - os.path.getmtime(CACHE_FILE)) >= REFRESH_SECONDS
+    except OSError:
+        return True
+
+
+def get_message() -> str:
+    if not REMOTE_URL:
+        return DEFAULT_MESSAGE
+
+    if not cached_remote_due_for_refresh():
+        try:
+            with open(CACHE_FILE) as f:
+                cached = f.read().strip()
+            if cached:
+                return cached
+        except OSError:
+            pass
+
+    fetched = fetch_remote(REMOTE_URL)
+    if fetched:
+        try:
+            with open(CACHE_FILE, "w") as f:
+                f.write(fetched)
+        except OSError:
+            pass
+        return fetched
+
+    try:
+        with open(CACHE_FILE) as f:
+            cached = f.read().strip()
+        if cached:
+            return cached
+    except OSError:
+        pass
+
+    return DEFAULT_MESSAGE
 
 
 def main() -> None:
@@ -44,17 +127,20 @@ def main() -> None:
     if not due():
         return
 
+    message = get_message()
+
     try:
         with open("/dev/tty", "w") as tty:
-            tty.write(MESSAGE)
+            tty.write(f"\033[2m{message}\033[0m\n")
     except OSError:
         return
 
-    try:
-        with open(STATE_FILE, "w") as f:
-            f.write(str(time.time()))
-    except OSError:
-        pass
+    if INTERVAL_SECONDS > 0:
+        try:
+            with open(STATE_FILE, "w") as f:
+                f.write(str(time.time()))
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":

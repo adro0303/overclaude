@@ -38,21 +38,30 @@ _overclaude_maybe_wire_graph() {
   fi
 }
 
+# Shared by cproj/ctel: resolve $OVERCLAUDE_PROJECTS_DIR/<project>, or print
+# a usage/not-found message and fail. Prints the resolved path on success so
+# callers do: dir="$(_overclaude_resolve_project_dir cproj "$1")" || return 1
+_overclaude_resolve_project_dir() {
+  local cmd="$1" proj="$2"
+  if [ -z "$proj" ]; then
+    echo "Usage: $cmd <project-name>" >&2
+    return 1
+  fi
+  local dir="$OVERCLAUDE_PROJECTS_DIR/$proj"
+  if [ ! -d "$dir" ]; then
+    echo "Not found: $dir" >&2
+    return 1
+  fi
+  echo "$dir"
+}
+
 # cproj <project>: cd into the project and (re)connect Remote Control so it's
 # reachable from the official Claude mobile app / claude.ai/code. Uses a git
 # worktree per spawned session when the project has git, same-dir otherwise.
 # Any number of projects can have Remote Control active at once.
 cproj() {
-  local proj="$1"
-  if [ -z "$proj" ]; then
-    echo "Usage: cproj <project-name>"
-    return 1
-  fi
-  local dir="$OVERCLAUDE_PROJECTS_DIR/$proj"
-  if [ ! -d "$dir" ]; then
-    echo "Not found: $dir"
-    return 1
-  fi
+  local proj="$1" dir
+  dir="$(_overclaude_resolve_project_dir cproj "$proj")" || return 1
   cd "$dir" || return 1
   _overclaude_maybe_wire_graph
   local spawn_mode="same-dir"
@@ -70,16 +79,8 @@ alias cprojs='claude agents'
 # stops the previous session first. Requires the telegram channel plugin
 # already installed and paired -- see docs/telegram-channel.md.
 ctel() {
-  local proj="$1"
-  if [ -z "$proj" ]; then
-    echo "Usage: ctel <project-name>"
-    return 1
-  fi
-  local dir="$OVERCLAUDE_PROJECTS_DIR/$proj"
-  if [ ! -d "$dir" ]; then
-    echo "Not found: $dir"
-    return 1
-  fi
+  local proj="$1" dir
+  dir="$(_overclaude_resolve_project_dir ctel "$proj")" || return 1
   local marker="$HOME/.claude/channels/telegram/.active_project"
   if [ -f "$marker" ]; then
     local prev_id

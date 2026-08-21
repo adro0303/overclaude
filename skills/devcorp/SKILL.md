@@ -53,6 +53,9 @@ has no dependency between them. Never run two agents that touch the same file.
 ## References — read ONE, only when its phase starts
 
 - `references/pipeline.md` — phase-by-phase gates, definition of done
+- `references/clean-code.md` — structure, DRY, naming, SOLID/OOP-when-it-
+  earns-it, agile/YAGNI discipline (ARCH plans against it; BUILD builds
+  against it)
 - `references/frontend.md` — design system, a11y, performance checklist
 - `references/backend.md` — API, data, auth, error handling
 - `references/security.md` — threat model + OWASP audit checklist

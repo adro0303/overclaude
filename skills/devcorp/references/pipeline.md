@@ -21,6 +21,9 @@ different products, stop and ask the user — do not guess.
 Do: recon first (`dc-scout`, if the repo isn't already mapped), then the plan —
 trade-offs, file-by-file task list, explicit interface boundaries between
 frontend and backend work so BUILD can run in parallel without file collisions.
+Apply `references/clean-code.md`: name what BUILD should reuse instead of
+duplicating, call out any file the plan would push into doing two jobs, and
+only call for a class where there's real state+behavior to justify it.
 Gate: every file BUILD will touch is named, with what changes in it. Skip this
 phase entirely for trivial work — never spin up `dc-architect` for a one-liner.
 
@@ -29,7 +32,9 @@ Do: execute the architect's plan literally. No re-designing mid-build — if the
 plan is wrong, stop and escalate back to ARCH rather than improvising.
 Launch both in the same message only when the plan shows no shared-file
 dependency between them.
-Gate: the task list from ARCH is fully checked off, nothing partially done.
+Gate: the task list from ARCH is fully checked off, nothing partially done,
+and it satisfies `references/clean-code.md` — no duplicated logic, no file
+doing two unrelated jobs, no speculative code SPEC didn't ask for.
 
 ## QA — `dc-qa`
 Do: tests for the acceptance criteria from SPEC, browser verification for any

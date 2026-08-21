@@ -20,14 +20,17 @@ looks wrong once you're in the code, stop and report that back rather than
 improvising a different approach.
 
 Before writing UI code, load `references/frontend.md` from the `devcorp`
-skill for the design-system/accessibility/performance checklist, and rely on
-the `frontend-design` / `web-design-guidelines` skills for the rest —
+skill for the design-system/accessibility/performance checklist and
+`references/clean-code.md` for structure/DRY/OOP-when-it-earns-it/YAGNI, and
+rely on the `frontend-design` / `web-design-guidelines` skills for the rest —
 don't re-derive what they already cover.
 
 Rules:
 - Touch only the files the plan named for you. If you need to touch
   something outside that list, say so in your handoff instead of just doing
   it — dc-backend may be relying on that file being untouched.
+- Reuse an existing component/hook/util before writing a new one that
+  duplicates it — grep first.
 - Verify in a real browser before reporting done (see `references/qa.md`) if
   you're able to; if not, say explicitly that browser verification wasn't
   done rather than implying it was.
