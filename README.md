@@ -7,7 +7,7 @@
   <a href="https://code.claude.com"><img alt="Built for Claude Code" src="https://img.shields.io/badge/Built%20for-Claude%20Code-ef5b2c"></a>
   <a href="./install.sh"><img alt="Install" src="https://img.shields.io/badge/install-one%20script-3a4048"></a>
   <img alt="Ports" src="https://img.shields.io/badge/inbound%20ports-zero-2ea44f">
-  <a href="https://github.com/adro0303/overclaude/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
+  <a href="./CONTRIBUTING.md"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-2ea44f.svg"></a>
   <a href="#-support-nudge-opt-in-off-by-default"><img alt="Support nudge: opt-in, off by default" src="https://img.shields.io/badge/support%20nudge-opt--in%2C%20OFF%20by%20default-blueviolet"></a>
   <a href="./skills/devcorp/references/clean-code.md"><img alt="DevCorp gate: OOP + SOLID + DRY + YAGNI" src="https://img.shields.io/badge/DevCorp%20gate-OOP%20%2B%20SOLID%20%2B%20DRY%20%2B%20YAGNI-2ea44f"></a>
   <a href="https://github.com/DietrichGebert/ponytail"><img alt="Code quality: ponytail-benchmarked" src="https://img.shields.io/badge/code%20quality-ponytail--benchmarked-8b5cf6"></a>
@@ -264,6 +264,14 @@ Once Telegram is paired, `hooks/stop-notify` (installed automatically) reuses th
 ## Acknowledgments
 
 Overclaude configures and connects existing tools rather than reinventing them. Full credit and license details for everything it depends on are in [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md) — in short: [DeusData/codebase-memory-mcp](https://github.com/DeusData/codebase-memory-mcp) (MIT), [Panniantong/Agent-Reach](https://github.com/Panniantong/Agent-Reach) (MIT), [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) (MIT, installed as a real plugin via its own marketplace, not just cited), and Anthropic's [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) (Apache-2.0) and [Claude Code](https://code.claude.com) itself.
+
+## Contributing
+
+Bug fixes and docs PRs are welcome directly. Proposing a new tool (MCP,
+skill, or plugin) has a higher bar — it has to be cloned, read, and
+compared against alternatives before it ships, same as everything already
+here. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for what that process
+looks like and what gets rejected up front.
 
 ## License
 
