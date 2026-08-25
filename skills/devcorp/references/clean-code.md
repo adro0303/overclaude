@@ -15,10 +15,33 @@ it violates this checklist, same as it isn't done if it fails a test.
 - This cuts both directions: don't split a file into five for one function
   each, either. A 15-line module doesn't need three layers of indirection.
 
-## DRY — grep before you write
-- Before writing a new function, grep for one that already does this or
-  something close to it. Extending or calling an existing function beats
-  writing a second one that drifts from it over time.
+## Reuse ladder — grep before you write
+Before writing new code, stop at the first rung that holds (adapted from
+[ponytail](https://github.com/DietrichGebert/ponytail)'s benchmarked
+ruleset — measured -54% LOC / -22% tokens / -20% cost against a no-skill
+baseline on real agentic sessions, with no drop in a separate safety score):
+
+1. Does this need to exist? — if SPEC/ARCH didn't ask for it, skip it (see
+   YAGNI below).
+2. Already in this codebase? — grep for a function that already does this or
+   something close to it. Extending or calling it beats writing a second one
+   that drifts from it over time.
+3. Does the stdlib/runtime already do it? — use that before adding a
+   dependency.
+4. Does the platform have a native feature for it? — e.g. `<input
+   type="date">` before a date-picker library plus a wrapper component.
+5. Does an already-installed dependency do it? — use it before adding a new
+   one.
+6. Does it fit in one line? — write the one line.
+7. Only then: the minimum code that actually works.
+
+The ladder runs *after* understanding the problem, not instead of it — read
+the code the change touches and trace the real flow before picking a rung.
+Lazy about the solution, never about reading — and never about validation,
+error handling, security, or accessibility, which stay off the table at
+every rung.
+
+Two more DRY checks that sit alongside the ladder:
 - Three or more call sites doing the same sequence of steps is a function
   waiting to be extracted — do it, don't let a fourth copy land.
 - Two similar-looking blocks are not automatically duplication if they exist
@@ -89,6 +112,10 @@ already designing classes or interfaces.
 - No function or file doing two unrelated jobs.
 - No third+ copy of logic that already exists elsewhere in the diff or the
   surrounding codebase — reused or extracted instead.
+- Nothing added that the stdlib, a native platform feature, or an
+  already-installed dependency already provides, and no multi-line block
+  where a one-liner does the same job (the reuse ladder above) — unless
+  doing so would cut validation, error handling, security, or accessibility.
 - Names are self-explanatory without needing a comment to compensate.
 - Any class introduced has real state+behavior or multiple implementations
   behind it — not a single-method wrapper around a pure function.

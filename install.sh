@@ -106,6 +106,17 @@ else
   warn "Agent-Reach install failed -- continuing without it."
 fi
 
+say "Installing ponytail (YAGNI/reuse-ladder plugin, MIT, ~983 tok always-on)..."
+if claude plugin marketplace add DietrichGebert/ponytail && claude plugin install ponytail@ponytail; then
+  say "ponytail installed -- enforces the reuse ladder on every turn, every project."
+  say "This is the one skill here with a fixed per-session cost (~983 tok); it's kept"
+  say "anyway because the code-quality gain is benchmarked, not assumed. To remove:"
+  say "claude plugin uninstall ponytail@ponytail"
+else
+  warn "ponytail install failed -- continuing without it. DevCorp's own clean-code.md"
+  warn "gate still carries an adapted copy of its reuse ladder for ARCH/BUILD."
+fi
+
 say "Installing DevCorp (multi-agent build pipeline skill + 7 subagents, original)..."
 mkdir -p "$CLAUDE_DIR/skills/devcorp" "$CLAUDE_DIR/agents"
 cp -r "$REPO_DIR/skills/devcorp/." "$CLAUDE_DIR/skills/devcorp/"
@@ -170,10 +181,11 @@ Done. What's automated vs. what needs you:
       inputNeededNotifEnabled) -- only reaches your phone once Remote
       Control is connected to the session, see below
     - cproj / ctel shell helpers
-    - codebase-memory-mcp / Agent-Reach / DevCorp (skill + 7 subagents,
-      including the clean-code/SOLID/agile checklist DevCorp builds
-      against) -- see README.md for what each one costs and when it's
-      worth it.
+    - codebase-memory-mcp / Agent-Reach / ponytail / DevCorp (skill + 7
+      subagents, including the clean-code/SOLID/agile checklist DevCorp
+      builds against) -- see README.md for what each one costs and when
+      it's worth it. ponytail is the one with a fixed per-session cost
+      (~983 tok); everything else here loads on demand.
 
   Optional (only the one [y/N] prompt above):
     - The support nudge -- everything else installs automatically.
